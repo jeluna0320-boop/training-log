@@ -1,0 +1,2806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Training">
+<meta name="theme-color" content="#0e0b08">
+<title>Training Log</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230e0b08'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' fill='%23d4a574' font-family='sans-serif' font-weight='700'%3E%E2%97%A2%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%230e0b08' rx='36'/%3E%3Ctext x='90' y='122' font-size='108' text-anchor='middle' fill='%23d4a574' font-family='sans-serif' font-weight='700'%3E%E2%97%A2%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Training Log","short_name":"Training","start_url":"./","display":"standalone","background_color":"%230e0b08","theme_color":"%230e0b08","orientation":"portrait","icons":[{"src":"data:image/svg+xml,%253Csvg xmlns=%2527http://www.w3.org/2000/svg%2527 viewBox=%25270 0 512 512%2527%253E%253Crect width=%2527512%2527 height=%2527512%2527 fill=%2527%25230e0b08%2527 rx=%2527102%2527/%253E%253Ctext x=%2527256%2527 y=%2527348%2527 font-size=%2527308%2527 text-anchor=%2527middle%2527 fill=%2527%2523d4a574%2527 font-family=%2527sans-serif%2527 font-weight=%2527700%2527%253E%25E2%2597%25A2%253C/text%253E%253C/svg%253E","sizes":"512x512","type":"image/svg+xml"}]}'>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
+
+:root {
+  --bg: #0e0b08;
+  --bg-2: #15110d;
+  --bg-3: #1d1813;
+  --bg-4: #261f17;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #ede4d6;
+  --text-2: #b5a896;
+  --muted: #75695a;
+  --accent: #d4a574;
+  --accent-2: #c98a6b;
+  --green: #7ca85a;
+  --red: #c46b5b;
+  --yellow: #d4b554;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter Tight', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+  line-height: 1.45;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bot);
+}
+
+.app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(at 20% 0%, rgba(212, 165, 116, 0.06) 0%, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(124, 168, 90, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.view { padding: 14px 18px 100px; position: relative; z-index: 1; }
+
+/* HERO */
+.hero { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 8px 0 20px; }
+.hero-left { display: flex; align-items: center; gap: 12px; }
+.hero-mark {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 32px;
+  color: var(--accent);
+  line-height: 1;
+  font-weight: 700;
+}
+.hero-text h1 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 22px;
+  margin: 0;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+.hero-text .muted { margin: 2px 0 0; font-size: 12.5px; }
+.muted { color: var(--muted); }
+
+.icon-btn {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* BLOCK SELECTOR */
+.block-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+.block-selector:hover { border-color: var(--line-strong); }
+.block-selector-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.block-selector-name {
+  font-weight: 600;
+  font-size: 14.5px;
+  margin-top: 1px;
+}
+.block-selector-icon { color: var(--muted); margin-left: auto; }
+
+/* PHASE CARD */
+.phase-card {
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.phase-card::after {
+  content: '';
+  position: absolute;
+  right: -40px; top: -40px;
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, rgba(212, 165, 116, 0.12), transparent 70%);
+}
+.phase-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.phase-week-row { display: flex; align-items: baseline; gap: 10px; }
+.week-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  background: rgba(212, 165, 116, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 165, 116, 0.2);
+}
+.phase-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+}
+.phase-card .icon-arrow { color: var(--muted); z-index: 1; }
+.phase-desc { margin: 6px 0 0; font-size: 13px; color: var(--text-2); }
+
+/* STATS ROW */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.stat {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.stat-num.small { font-size: 13.5px; }
+.stat-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 1px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+/* SECTIONS */
+.section-h {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-2);
+  margin: 26px 0 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-h .add-link {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.section-h .add-link:hover { background: rgba(212, 165, 116, 0.08); }
+
+/* EMPTY STATE — home */
+.empty-home {
+  background: var(--bg-2);
+  border: 1px dashed var(--line-strong);
+  border-radius: 14px;
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+.empty-home h3 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+.empty-home p {
+  color: var(--text-2);
+  font-size: 13.5px;
+  margin: 0 0 18px;
+}
+.empty-actions { display: flex; flex-direction: column; gap: 8px; }
+
+/* DAY GRID */
+.day-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 6px; }
+.day-btn {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  display: block;
+  width: 100%;
+}
+.day-btn:hover { border-color: var(--line-strong); }
+.day-btn.suggested {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.06), var(--bg-3));
+}
+.day-btn-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.day-label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+}
+.next-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--accent);
+  background: rgba(212, 165, 116, 0.12);
+  padding: 3px 7px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.day-subtitle { font-size: 12.5px; color: var(--text-2); margin-bottom: 4px; }
+.day-meta { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+/* BUTTONS */
+.primary-btn {
+  width: 100%;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.primary-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.secondary-btn {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.secondary-btn:hover { border-color: var(--accent); color: var(--accent); }
+.danger-btn {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid rgba(196, 107, 91, 0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+.danger-btn:hover { background: rgba(196, 107, 91, 0.08); }
+.full-btn {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 13px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.full-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  margin-left: -6px;
+}
+.back-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.back-btn:hover { background: var(--bg-2); }
+.topbar-text { flex: 1; min-width: 0; }
+.topbar-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar-subtitle { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 6px; }
+.topbar-action {
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.topbar-action:hover { color: var(--accent); background: var(--bg-2); }
+
+/* SESSION VIEW */
+.session-progress-bar {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar-track {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  transition: width 0.3s;
+}
+.progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.exercise-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.exercise-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+}
+.exercise-card.done {
+  border-color: rgba(124, 168, 90, 0.4);
+  background: linear-gradient(135deg, rgba(124, 168, 90, 0.04), var(--bg-2));
+}
+.ex-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  padding-top: 4px;
+  min-width: 18px;
+}
+.ex-body { flex: 1; min-width: 0; }
+.ex-name { font-weight: 600; font-size: 14.5px; margin-bottom: 3px; }
+.ex-scheme {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-last {
+  font-size: 11.5px;
+  color: var(--text-2);
+  margin-top: 4px;
+}
+.ex-current {
+  font-size: 11.5px;
+  color: var(--green);
+  margin-top: 2px;
+  font-weight: 500;
+}
+.ex-icon { color: var(--muted); padding-top: 4px; }
+.exercise-card.done .ex-icon { color: var(--green); }
+
+/* EXERCISE DETAIL */
+.ex-header-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.ex-header-scheme {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-2);
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+.ex-header-rest {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: var(--accent);
+  background: rgba(212, 165, 116, 0.08);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 165, 116, 0.18);
+}
+
+/* COLLAPSIBLE INFO SECTIONS */
+.info-section {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.info-section summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+}
+.info-section summary::-webkit-details-marker { display: none; }
+.info-section .info-icon {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.info-section .info-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex: 1;
+}
+.info-section .chev {
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+.info-section[open] .chev { transform: rotate(180deg); }
+.info-section .info-body {
+  padding: 0 14px 12px;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+.info-section .info-body strong { color: var(--text); font-weight: 600; }
+
+/* LAST TIME */
+.last-time-card {
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.06), var(--bg-2));
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.last-time-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.last-time-sets { display: flex; flex-direction: column; gap: 4px; }
+.last-set {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.last-set-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 16px;
+}
+
+/* SETS */
+.sets-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.set-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 20px;
+}
+.set-inputs { flex: 1; display: flex; gap: 6px; }
+.input-cell {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-cell.wide { flex: 2; }
+.input-cell input {
+  width: 100%;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 38px 10px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.input-cell input::-webkit-outer-spin-button,
+.input-cell input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.input-cell input::placeholder { color: var(--muted); opacity: 0.5; }
+.input-cell input:focus { border-color: var(--accent); }
+.input-label {
+  position: absolute;
+  right: 10px;
+  font-size: 10.5px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  pointer-events: none;
+}
+.remove-set {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+.remove-set:disabled { opacity: 0.3; cursor: not-allowed; }
+.add-set-btn {
+  background: transparent;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+.add-set-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s;
+}
+.modal {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  padding: 22px 20px calc(24px + var(--safe-bot));
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s;
+}
+.modal h3 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  margin: 0 0 16px;
+  font-size: 17px;
+}
+.field { display: block; margin-bottom: 14px; }
+.field > span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-2);
+  margin-bottom: 5px;
+}
+.field input, .field textarea, .field select {
+  width: 100%;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  resize: vertical;
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
+.modal-actions { display: flex; gap: 8px; margin-top: 10px; }
+.modal-actions .primary-btn, .modal-actions .secondary-btn { flex: 1; }
+
+.pain-row { display: grid; grid-template-columns: repeat(11, 1fr); gap: 3px; }
+.pain-btn {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  color: var(--text-2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 8px 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pain-btn.active.pain-low { background: var(--green); border-color: var(--green); color: var(--bg); font-weight: 700; }
+.pain-btn.active.pain-mid { background: var(--yellow); border-color: var(--yellow); color: var(--bg); font-weight: 700; }
+.pain-btn.active.pain-high { background: var(--red); border-color: var(--red); color: var(--bg); font-weight: 700; }
+
+/* PHASES VIEW */
+.phase-block {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.phase-block.active {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.05), var(--bg-2));
+}
+.phase-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.phase-block-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+.phase-block-weeks {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.phase-block.active .phase-block-weeks { color: var(--accent); }
+.phase-block-tagline {
+  font-size: 12.5px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+.phase-block-desc { font-size: 13px; color: var(--text-2); line-height: 1.55; }
+.active-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-left: 8px;
+  vertical-align: 1px;
+}
+
+/* BLOCKS LIST */
+.block-list { display: flex; flex-direction: column; gap: 10px; }
+.block-item {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.block-item.active { border-color: var(--accent); }
+.block-info { flex: 1; min-width: 0; cursor: pointer; }
+.block-name { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+.block-meta { font-size: 11.5px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.block-actions { display: flex; gap: 6px; }
+.block-action-btn {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  color: var(--text-2);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.block-action-btn:hover { color: var(--accent); border-color: var(--accent); }
+.block-action-btn.danger:hover { color: var(--red); border-color: var(--red); }
+
+/* BLOCK EDITOR */
+.editor-day-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.day-tab {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--text-2);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.day-tab.active { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+.day-tab.add-tab { border-style: dashed; }
+
+.editor-ex-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.editor-ex-row {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.editor-ex-info { flex: 1; min-width: 0; cursor: pointer; }
+.editor-ex-name { font-weight: 600; font-size: 13.5px; }
+.editor-ex-meta { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.editor-ex-actions { display: flex; gap: 4px; }
+.reorder-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.reorder-btn:hover { color: var(--accent); background: var(--bg-3); }
+
+/* PROGRESS / CHARTS */
+.exercise-picker-btn {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+.picker-day-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: var(--muted);
+  background: var(--bg-3);
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 6px;
+  text-align: center;
+}
+.stat-card.stat-good { border-color: rgba(124, 168, 90, 0.4); }
+.stat-card-value {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.stat-card.stat-good .stat-card-value { color: var(--green); }
+.stat-card-label {
+  font-size: 9.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.chart-wrap {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 10px 8px;
+  margin-bottom: 12px;
+}
+.chart-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px 4px;
+}
+.chart-svg { width: 100%; height: 180px; display: block; }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+.empty-state svg { margin-bottom: 12px; opacity: 0.4; }
+.empty-state p { margin: 4px 0; font-size: 13.5px; }
+
+.picker-list { max-height: 65vh; overflow-y: auto; }
+.picker-day-group { margin-bottom: 10px; }
+.picker-day-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+}
+.picker-row {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: 13.5px;
+  padding: 10px 8px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.picker-row:hover { background: var(--bg-3); color: var(--text); }
+.picker-row.active { color: var(--accent); background: rgba(212, 165, 116, 0.06); }
+
+/* HISTORY */
+.history-list { display: flex; flex-direction: column; gap: 10px; }
+.history-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+}
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.history-day {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 14.5px;
+}
+.history-date { font-size: 11.5px; color: var(--muted); }
+.history-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.meta-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  background: var(--bg-3);
+  color: var(--text-2);
+  padding: 3px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.pain-tag-low { color: var(--green); background: rgba(124, 168, 90, 0.1); }
+.pain-tag-mid { color: var(--yellow); background: rgba(212, 181, 84, 0.1); }
+.pain-tag-high { color: var(--red); background: rgba(196, 107, 91, 0.1); }
+.history-details { margin-top: 8px; }
+.history-details summary {
+  font-size: 12px;
+  color: var(--text-2);
+  cursor: pointer;
+  list-style: none;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+.history-details summary::-webkit-details-marker { display: none; }
+.history-details summary::before { content: '▸ '; color: var(--muted); }
+.history-details[open] summary::before { content: '▾ '; }
+.history-entries { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
+.history-entry-row {
+  background: var(--bg-3);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.he-name { flex: 1; text-align: left; }
+.he-summary { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted); }
+.history-notes {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--bg-3);
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--text-2);
+}
+
+/* SETTINGS */
+.settings-section {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.settings-section h3 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 14px;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+.settings-section p {
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: calc(24px + var(--safe-bot));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--bg);
+  padding: 12px 20px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 200;
+  animation: toastIn 0.25s;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.footer-note {
+  margin-top: 32px;
+  font-size: 10.5px;
+  color: var(--muted);
+  text-align: center;
+  font-style: italic;
+  padding: 0 20px;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); } to { transform: translateY(0); } }
+@keyframes toastIn { from { transform: translate(-50%, 16px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+'use strict';
+
+// ============================================================
+// STORAGE — localStorage with JSON
+// ============================================================
+const STORAGE_KEY = 'training_log_v1';
+
+const DEFAULT_PHASES = [
+  { id: 'p1', name: 'Phase 1', weeks: 'Wk 1–2', tagline: 'Neurological adaptation', desc: 'Learn movements — do not max out. Strength gains this phase are neurological, not tissue growth. Use 60–65% of estimated max. If no recent 1RM, start with a weight you could perform for 15+ clean reps. Ingrain tempo (especially slow eccentrics). Rate knee pain 0–10 after each leg session; target 0–2. If pain exceeds 3, reduce load or hold time.' },
+  { id: 'p2', name: 'Phase 2', weeks: 'Wk 3–6', tagline: 'Peak hypertrophy block', desc: 'Progressive overload — chase reps then weight. Hit the top end of each rep range before adding weight. Maintenance kcal ≈ bodyweight × 14–16 (14 sedentary, 16 active). Eat 300–500 kcal above maintenance. Protein 0.8–1g per lb bodyweight. Sleep 7.5–9 hrs.' },
+  { id: 'p3', name: 'Phase 3', weeks: 'Wk 7–8', tagline: 'Consolidation & rotation prep', desc: 'Slight volume reduction — assess and prepare. Drop 1 set per exercise in week 8. Partial deload lets connective tissue consolidate. Document working weights. If bilateral knee pain is at 0–1/10, you are cleared for Week 8+ rotations. If either knee still 3+, extend isometric protocol another 4 weeks.' },
+  { id: 'p4', name: 'Restart', weeks: 'Wk 9+', tagline: 'New block — exercise rotation', desc: 'Swap to Week 8+ exercises. Keep same set/rep/tempo for first 2 weeks (neurological re-adaptation). Core patterns remain: hip hinge, vertical pull, horizontal pull, knee-safe leg press. Do not rotate again until Wk 16–18. Repeat the Week 8 partial deload at the end of every 8-week block.' },
+];
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultData();
+    const parsed = JSON.parse(raw);
+    // Ensure phases exist (migration safety)
+    if (!parsed.phases) parsed.phases = DEFAULT_PHASES;
+    return parsed;
+  } catch (e) {
+    console.error('Load failed:', e);
+    return defaultData();
+  }
+}
+
+function defaultData() {
+  return {
+    version: 1,
+    startDate: new Date().toISOString(),
+    blocks: [],          // array of { id, name, weeksLabel, days: [{ id, name, subtitle, exercises: [{...}] }] }
+    activeBlockId: null,
+    sessions: [],        // array of completed/draft sessions
+    phases: DEFAULT_PHASES,
+    collapsedSections: {}, // { 'exId-target': true, ... } — per-exercise collapse state
+  };
+}
+
+function saveData(d) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    return true;
+  } catch (e) {
+    console.error('Save failed:', e);
+    return false;
+  }
+}
+
+// ============================================================
+// QUICK-START PRESET (the user's actual plan from the doc)
+// ============================================================
+function makePresetBlock1() {
+  const block = {
+    id: uid('b'),
+    name: 'Block 1 — Weeks 1–8',
+    weeksLabel: 'Wk 1–8',
+    days: [
+      {
+        id: uid('d'), name: 'Day 1', subtitle: 'Hip hinge, vertical pull, knee conditioning',
+        exercises: [
+          { id: uid('e'), name: 'Spanish Squat Isometric', scheme: '4 × 45 sec isometric hold — max 30 sec rest between sets. Focus on 90° knee angle.', rest: '30 sec', target: 'Patellar tendon (loading), VMO, quads, glutes', goal: 'HSR isometric analgesic for patellar tendonitis — reduces pain for 45–60 min post-hold, priming the knee for heavier work.', progression: 'Wk 1–2: 30 sec. Wk 3–4: 45 sec. Wk 5–6: 60 sec. Wk 7–8: add light band or weighted vest 5–10 lbs.', rotation: 'Single-Leg Wall Sit — increases unilateral loading on each tendon independently.', type: 'isometric' },
+          { id: uid('e'), name: 'Romanian Deadlift', scheme: '4 × 8. 3 sec eccentric, 1 sec pause at stretch, 2 sec concentric. 90 sec rest.', rest: '90 sec', target: 'Primary: hamstrings, glutes. Secondary: spinal erectors, lats (during brace).', goal: 'Core posterior chain movement. Counteracts glute shutdown from prolonged driving. Builds hip hinge pattern for production floor endurance.', progression: 'Establish form weight. Add 5 lbs every 2 weeks when you hit all 4×8 with perfect tempo. Prioritize depth over load.', rotation: 'Single-Leg RDL (dumbbell) — unilateral, exposes imbalances.', type: 'weight' },
+          { id: uid('e'), name: 'Cable Seated Row (Neutral)', scheme: '4 × 10. 2 sec pull, 1 sec squeeze, 3 sec slow return. 75 sec rest.', rest: '75 sec', target: 'Primary: mid traps, rhomboids, lats. Secondary: rear delts, biceps.', goal: 'Counteracts rounded-shoulder driving posture. More pulling than pushing is core to this plan.', progression: 'Add 5 lbs when all 4×10 hit. If weight increases faster than form, prioritize the 3-sec eccentric before adding load.', rotation: 'Chest-Supported T-Bar Row — removes lower back fatigue, greater lat/mid-trap isolation.', type: 'weight' },
+          { id: uid('e'), name: 'Leg Press (Feet High & Wide)', scheme: '3 × 12. 4 sec eccentric, 1 sec pause, 2 sec press. 90 sec rest. Do NOT lock knees. Stop ~20° before full extension.', rest: '90 sec', target: 'Primary: glutes, hamstrings (high foot placement). Secondary: quads at safe ROM.', goal: 'HSR for the patellar tendon in a controlled, knee-safe environment. High foot placement shifts load from tendon to glutes.', progression: 'Wk 1–2: light, master the 4-sec eccentric. Add 10 lbs every 2 weeks. Monitor knee pain 0–10; stay below 3/10.', rotation: 'Hack Squat Machine — different angle of knee flexion, new stress on quads, still low-impact.', type: 'weight' },
+          { id: uid('e'), name: 'Lat Pulldown (Wide)', scheme: '3 × 10. 2 sec pull, 1 sec hold at chest, 3 sec controlled return. 75 sec rest.', rest: '75 sec', target: 'Primary: lats. Secondary: teres major, biceps, rear delts.', goal: 'Vertical pull to pair with horizontal row — ensures full lat development. Lat strength is critical for upright posture under fatigue.', progression: 'Add 5 lbs when 3×10 achieved cleanly. Aim for full scapular depression and retraction at bottom — not a bicep curl.', rotation: 'Neutral-Grip Pulldown or Assisted Pull-Up — changes grip mechanics, more core stabilization.', type: 'weight' },
+          { id: uid('e'), name: 'Dumbbell Bench Press', scheme: '4 × 10. 3 sec lower, 1 sec at chest, 2 sec press. 75 sec rest.', rest: '75 sec', target: 'Primary: pecs. Secondary: anterior delts, triceps.', goal: 'Balanced push to offset higher rowing volume. Kept to 1 push per 2 pulls per posterior bias requirement.', progression: 'Add 2.5–5 lbs per dumbbell every 2 weeks when all reps completed cleanly.', rotation: 'Incline Dumbbell Press — shifts emphasis to upper pec.', type: 'weight' },
+          { id: uid('e'), name: 'Cable Chest Fly (Mid-Pulley)', scheme: '3 × 12. 3 sec eccentric (arms open to full stretch), 1 sec hold at stretch, 2 sec concentric squeeze. 60 sec rest.', rest: '60 sec', target: 'Primary: pecs (sternal head, stretch-mediated hypertrophy). Secondary: anterior delts.', goal: 'Adds chest volume to bring total weekly chest sets into the 7-set hypertrophy range. Stretch-position emphasis is the strongest hypertrophy stimulus for the pecs.', progression: 'Add 2.5–5 lbs every 2 weeks. Prioritize stretch — if added weight shortens ROM, drop back.', rotation: 'Low-to-High Cable Fly — emphasizes upper pec fibers.', type: 'weight' },
+          { id: uid('e'), name: 'Rowing Ergometer (Finisher)', scheme: '10–12 min at 20–24 strokes/min, ~2:15–2:30/500m pace (~60–65% max HR, conversational).', rest: '—', target: 'Conditioning, reinforces hip hinge pattern.', goal: 'Focus on full hip extension at the drive. Do NOT push hard enough to bleed into tomorrow\u2019s recovery.', progression: 'Hold steady output — this is recovery work, not conditioning.', rotation: '—', type: 'cardio' },
+        ]
+      },
+      {
+        id: uid('d'), name: 'Day 2', subtitle: 'Upper body pull, glutes, knee isometric loading',
+        exercises: [
+          { id: uid('e'), name: 'Heavy Wall Sit', scheme: '4 × 45 sec hold. Knees ~90°. Hold a weight plate (10–25 lb) on quads. 30 sec rest.', rest: '30 sec', target: 'Patellar tendon (isometric load), quads, VMO, glutes.', goal: 'Alternates with Spanish Squat to vary isometric angle. Weighted plate increases compressive load — key mechanism of HSR tendon adaptation.', progression: 'Wk 1–2: bodyweight. Wk 3–4: 10 lb plate. Wk 5–6: 25 lb plate. Wk 7–8: 35 lb plate or 60-sec holds.', rotation: 'Reverse Nordic Curl (eccentric only) — gold standard HSR exercise once baseline is established.', type: 'isometric_weighted' },
+          { id: uid('e'), name: 'Hip Thrust', scheme: '4 × 10. 2 sec lower, 2 sec isometric squeeze at top, 2 sec lower. 90 sec rest. Drive through heels.', rest: '90 sec', target: 'Primary: glutes (maximus). Secondary: hamstrings, core bracing.', goal: 'Best exercise for glute activation post-driving. Directly addresses gluteal amnesia from prolonged sitting. Zero knee shear — safe for patellar tendonitis.', progression: 'Add 10 lbs every 2 weeks. 2-sec peak contraction is non-negotiable — this is where the adaptation happens.', rotation: 'Single-Leg Hip Thrust — unilateral, reveals left/right glute imbalances.', type: 'weight' },
+          { id: uid('e'), name: 'Seated Cable Face Pull', scheme: '4 × 15 with rope. Pull to forehead, elbows flared high, 2 sec hold at peak. Light weight.', rest: '75 sec', target: 'Primary: rear delts, external rotators. Secondary: mid and lower traps.', goal: 'Counteracts forward head posture and internal rotation from driving. Critical for shoulder health under standing-shift fatigue.', progression: 'Keep weight light. Progress by adding 1 rep per set every 2 weeks, not load. Quality of external rotation is the metric.', rotation: 'Bent-Over Dumbbell Rear Delt Fly (bilateral) — removes cable, more stabilization demand.', type: 'weight' },
+          { id: uid('e'), name: 'Seated Leg Curl', scheme: '4 × 10. 3 sec lower, 1 sec at peak flex, 3 sec eccentric. 90 sec rest. Seated version keeps hip at 90° to load distal hamstring.', rest: '90 sec', target: 'Primary: biceps femoris (long head), semimembranosus. Secondary: gastrocnemius.', goal: 'Isolated hamstring work is critical for knee stability — strong hamstrings act as functional support for the patellar tendon. HSR tempo applies.', progression: 'Add 5 lbs every 2 weeks. Never sacrifice the 3-sec eccentric for heavier weight — eccentric is where tendon remodeling occurs.', rotation: 'Lying Leg Curl — changes hip angle, hits hamstring from lengthened position.', type: 'weight' },
+          { id: uid('e'), name: 'Dumbbell Overhead Press', scheme: '3 × 10 standing or seated. 2 sec press, 1 sec at top, 3 sec lower. 75 sec rest. Brace core throughout.', rest: '75 sec', target: 'Primary: medial and anterior delts. Secondary: upper traps, triceps, core stability.', goal: 'Standing OHP simultaneously challenges core and spinal erector bracing — directly trains postural endurance needed for prolonged standing shifts.', progression: 'Add 2.5 lbs per dumbbell every 2 weeks. If standing causes lower back fatigue, drop to seated.', rotation: 'Arnold Press — adds internal/external rotation, recruits more delt fibers.', type: 'weight' },
+          { id: uid('e'), name: 'Cable Straight-Arm Pulldown', scheme: '3 × 12. 2 sec pull, 1 sec squeeze hips into bar, 3 sec return to full lat stretch. Slight forward lean. 75 sec rest.', rest: '75 sec', target: 'Primary: lats (long head, peak contraction). Secondary: teres major, posterior delts.', goal: 'Isolates lats at peak contraction without bicep involvement — fills the gap rows and pulldowns leave. Lat development = upright posture endurance.', progression: 'Add 5 lbs every 2 weeks. Cue: push elbows toward hips, not pulling with hands.', rotation: 'Single-Arm Cable Pulldown — corrects lat dominance, more anti-rotation demand.', type: 'weight' },
+          { id: uid('e'), name: 'Stationary Bike (Finisher)', scheme: '12 min at 80–90 RPM, low resistance. HR under 130 BPM.', rest: '—', target: 'Recovery, synovial fluid circulation = tendon nutrition.', goal: 'Promotes blood flow to knees without any compressive force. This is active recovery, not conditioning.', progression: 'Steady — no progression intended.', rotation: '—', type: 'cardio' },
+        ]
+      },
+      {
+        id: uid('d'), name: 'Day 3', subtitle: 'Spinal erectors, traps, slow eccentrics',
+        exercises: [
+          { id: uid('e'), name: 'Sissy Squat Isometric (Bottom)', scheme: '4 × 30–40 sec isometric hold at bottom. Hold a fixed surface for balance. 30 sec rest. Not a full sissy squat — hold only.', rest: '30 sec', target: 'Patellar tendon (high-angle load), rectus femoris, VMO.', goal: 'Loads patellar tendon at a higher knee angle than Spanish Squat, targeting the mid-portion of the tendon. Rotate angle each session for full coverage.', progression: 'Wk 1–2: 20 sec hold. Increase by 5 sec every 2 weeks. Only progress when pain stays 0–2/10.', rotation: 'Decline Squat Isometric (25° decline board) — clinical standard for mid-tendon loading.', type: 'isometric' },
+          { id: uid('e'), name: 'Trap Bar Deadlift', scheme: '4 × 6 heavy reps. 3 sec lower, 1 sec pause at floor, 2 sec drive. 2 min rest. Warm-up: 5@40%, 3@60%, 1@80% of working weight.', rest: '2 min', target: 'Primary: spinal erectors, glutes, hamstrings. Secondary: traps, lats, quads.', goal: 'Heaviest movement of the week. Trap bar reduces lumbar shear vs. conventional deadlift. Builds spinal erector endurance for long production floor shifts.', progression: 'Add 5 lbs every 1–2 weeks. Given the low rep range, prioritize progressive overload here more than any other exercise.', rotation: 'Sumo Deadlift — wider stance, new adductor and glute recruitment pattern.', type: 'weight' },
+          { id: uid('e'), name: 'Barbell Row (Pendlay)', scheme: '4 × 8. 1 sec explosive pull from dead stop, 1 sec squeeze, 3 sec controlled lower to floor. 90 sec rest. Torso near parallel.', rest: '90 sec', target: 'Primary: lower and mid traps, rhomboids, rear delts. Secondary: spinal erectors (isometric), biceps.', goal: 'Horizontal pulling from a hip-hinged position simultaneously trains spinal erectors isometrically — exactly the demand of leaning over a production workstation.', progression: 'Add 5 lbs every 2 weeks. Eccentric is the priority — if you cannot control the 3-sec lower, reduce weight.', rotation: 'Meadows Row (single-arm landmine) — unilateral, greater lat stretch at bottom.', type: 'weight' },
+          { id: uid('e'), name: 'Goblet Squat (Slow Eccentric)', scheme: '3 × 12. 5 sec slow descent, 2 sec pause in hole, 2 sec controlled stand. Light to moderate dumbbell. 90 sec rest.', rest: '90 sec', target: 'Primary: quads, glutes. Secondary: core, hip flexors (lengthening), adductors.', goal: 'Ultra-slow eccentrics are the cornerstone of HSR for tendon remodeling. 5-sec lowering maximizes mechanical load on the patellar tendon without high-impact forces.', progression: 'Begin with very light dumbbell. Only add weight when the 5-sec eccentric is consistent across all 3 sets. Expect slow load progression.', rotation: 'Bulgarian Split Squat (rear foot elevated) — unilateral quad/glute demand, hip flexor stretch on rear leg.', type: 'weight' },
+          { id: uid('e'), name: 'Cable Upright Row (Wide)', scheme: '3 × 12 with straight bar or rope at low cable. Wide grip (elbows lead above wrists). 2 sec pull, 1 sec at top, 2 sec lower. 75 sec rest.', rest: '75 sec', target: 'Primary: upper traps, medial delts. Secondary: rhomboids, rear delts.', goal: 'Upper trap development is critical for cervical spine stability during prolonged standing. Wide grip removes impingement risk of narrow-grip upright rows.', progression: 'Add 5 lbs every 2 weeks. If any shoulder impingement, switch to DB Lateral Raise immediately.', rotation: 'Dumbbell Farmer\u2019s Carry (3 × 40m walks) — trap endurance, spinal stability in a functional pattern.', type: 'weight' },
+          { id: uid('e'), name: 'Tricep Pushdown + Curl Superset', scheme: '4 × 12 pushdown (2-1-2) immediately followed by 4 × 12 dumbbell curl (2-1-2). 60 sec rest between supersets.', rest: '60 sec', target: 'Triceps (lateral head), biceps (long and short head).', goal: 'Arm hypertrophy accessory work. Kept at end to avoid fatiguing elbow flexors needed for heavy pulling earlier in the session.', progression: 'Add 2.5–5 lbs every 2 weeks on curls. Pushdown progress is slower — focus on full tricep lockout at bottom.', rotation: 'Overhead Tricep Extension + Hammer Curl — different angle, long head of tricep + brachialis.', type: 'weight' },
+          { id: uid('e'), name: 'Sled Push (Finisher)', scheme: '3–4 × 20m pushes at slow walk pace. Light load. If no sled: 10 min stationary bike or 10 min treadmill walk at 3.5 mph.', rest: '—', target: 'Hip extension, erector bracing.', goal: 'Sled pushes directly train the same hip extension and erector bracing demanded by walking a production floor for 8+ hours.', progression: 'Steady — this is not a conditioning challenge.', rotation: '—', type: 'cardio' },
+        ]
+      },
+    ]
+  };
+  return block;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function uid(prefix) {
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function fmtDateShort(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function daysAgo(iso) {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  if (diff < 1) return 'today';
+  if (diff < 2) return 'yesterday';
+  return `${diff}d ago`;
+}
+
+function getActiveBlock(data) {
+  return data.blocks.find(b => b.id === data.activeBlockId) || null;
+}
+
+function getLastEntryForExercise(sessions, exId) {
+  for (let i = sessions.length - 1; i >= 0; i--) {
+    if (!sessions[i].completed) continue;
+    const entry = sessions[i].entries?.[exId];
+    if (entry && entry.sets?.length > 0) {
+      return { entry, date: sessions[i].date };
+    }
+  }
+  return null;
+}
+
+function getWeekNumber(startDate) {
+  const days = Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000);
+  return Math.max(1, Math.floor(days / 7) + 1);
+}
+
+function getPhase(week, phases) {
+  if (week <= 2) return phases[0];
+  if (week <= 6) return phases[1];
+  if (week <= 8) return phases[2];
+  return phases[3];
+}
+
+function summarizeSets(sets, type) {
+  if (!sets || sets.length === 0) return '—';
+  if (type === 'cardio') {
+    return sets[0].duration ? `${sets[0].duration} min` : 'logged';
+  }
+  if (type === 'isometric') {
+    const max = Math.max(...sets.map(s => s.duration || 0));
+    return `${sets.length} × ${max}s`;
+  }
+  if (type === 'isometric_weighted') {
+    const w = Math.max(...sets.map(s => s.weight || 0));
+    const d = Math.max(...sets.map(s => s.duration || 0));
+    return `${sets.length} × ${d}s @ ${w}lb`;
+  }
+  const w = Math.max(...sets.map(s => s.weight || 0));
+  const reps = sets.map(s => s.reps).filter(r => r != null).join('/');
+  return `${w}lb × ${reps || '—'}`;
+}
+
+function formatSetDisplay(s, type) {
+  if (type === 'weight') return `${s.weight ?? '—'} lb × ${s.reps ?? '—'}`;
+  if (type === 'isometric') return `${s.duration ?? '—'} sec`;
+  if (type === 'isometric_weighted') return `${s.duration ?? '—'}s @ ${s.weight ?? 0}lb`;
+  if (type === 'cardio') return `${s.duration ?? '—'} min`;
+  return '—';
+}
+
+// ============================================================
+// SVG ICONS
+// ============================================================
+const I = {
+  chev: (size = 18) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
+  chevR: (size = 18) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
+  chevL: (size = 22) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
+  plus: (size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  minus: (size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  check: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  save: (size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>`,
+  trash: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+  edit: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  trend: (size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+  settings: (size = 18) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  cal: (size = 36) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  dumbbell: (size = 36) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11M6.5 17.5h11"/><rect x="3" y="9" width="3" height="6" rx="1"/><rect x="18" y="9" width="3" height="6" rx="1"/></svg>`,
+  alert: (size = 11) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  target: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+  flag: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`,
+  arrow: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+  rotate: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`,
+  notes: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`,
+  clock: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  up: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`,
+  down: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
+};
+
+// ============================================================
+// APP STATE & ROUTER
+// ============================================================
+let data = loadData();
+let route = { view: 'home', params: {} };
+let toastTimer = null;
+
+function persist() { saveData(data); }
+
+function navigate(view, params = {}) {
+  route = { view, params };
+  render();
+  window.scrollTo(0, 0);
+}
+
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  toastTimer = setTimeout(() => t.remove(), 2200);
+}
+
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="app">${routeContent()}</div>`;
+  // Attach handlers AFTER inserting innerHTML
+  attachHandlers();
+}
+
+function routeContent() {
+  switch (route.view) {
+    case 'home': return renderHome();
+    case 'phases': return renderPhases();
+    case 'blocks': return renderBlocksList();
+    case 'block-edit': return renderBlockEdit();
+    case 'exercise-edit': return renderExerciseEdit();
+    case 'session': return renderSession();
+    case 'exercise': return renderExerciseLog();
+    case 'progress': return renderProgress();
+    case 'history': return renderHistory();
+    case 'settings': return renderSettings();
+    default: return renderHome();
+  }
+}
+
+// ============================================================
+// HOME VIEW
+// ============================================================
+function renderHome() {
+  const activeBlock = getActiveBlock(data);
+  const week = getWeekNumber(data.startDate);
+  const phase = getPhase(week, data.phases);
+  const completedSessions = data.sessions.filter(s => s.completed);
+  const totalSessions = completedSessions.length;
+  const lastSession = [...completedSessions].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  const dayOrder = activeBlock ? activeBlock.days.map(d => d.id) : [];
+  let suggestedDayId = dayOrder[0] || null;
+  if (lastSession && dayOrder.includes(lastSession.dayId)) {
+    const idx = dayOrder.indexOf(lastSession.dayId);
+    suggestedDayId = dayOrder[(idx + 1) % dayOrder.length];
+  }
+
+  return `
+    <div class="view">
+      <header class="hero">
+        <div class="hero-left">
+          <div class="hero-mark">◢</div>
+          <div class="hero-text">
+            <h1>Training</h1>
+            <p class="muted">${fmtDate(new Date().toISOString())}</p>
+          </div>
+        </div>
+        <button class="icon-btn" data-action="goto-settings" aria-label="Settings">${I.settings()}</button>
+      </header>
+
+      <div class="block-selector" data-action="goto-blocks">
+        <div>
+          <div class="block-selector-label">Active block</div>
+          <div class="block-selector-name">${activeBlock ? escapeHtml(activeBlock.name) : 'No block selected'}</div>
+        </div>
+        <div class="block-selector-icon">${I.chevR()}</div>
+      </div>
+
+      <div class="phase-card" data-action="goto-phases">
+        <div class="phase-card-head">
+          <div class="phase-week-row">
+            <span class="week-num">WK ${week}</span>
+            <span class="phase-name">${phase.name}</span>
+          </div>
+          <span class="icon-arrow">${I.chevR(16)}</span>
+        </div>
+        <p class="phase-desc">${escapeHtml(phase.tagline)}</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-num">${totalSessions}</div>
+          <div class="stat-label">sessions</div>
+        </div>
+        <div class="stat">
+          ${lastSession
+            ? `<div class="stat-num small">${fmtDateShort(lastSession.date)}</div><div class="stat-sub">${daysAgo(lastSession.date)}</div>`
+            : `<div class="stat-num">—</div>`}
+          <div class="stat-label">last lift</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">${suggestedDayId && activeBlock ? escapeHtml(activeBlock.days.find(d => d.id === suggestedDayId).name) : '—'}</div>
+          <div class="stat-label">up next</div>
+        </div>
+      </div>
+
+      ${!activeBlock ? renderEmptyHome() : renderDayGrid(activeBlock, suggestedDayId)}
+
+      <h2 class="section-h">Progression</h2>
+      <button class="full-btn" data-action="goto-history">${I.trend(16)}<span>View history & progress</span></button>
+
+      <p class="footer-note">Data is saved locally on this device. Export regularly from settings to back up.</p>
+    </div>
+  `;
+}
+
+function renderEmptyHome() {
+  return `
+    <div class="empty-home">
+      <h3>No training block yet</h3>
+      <p>Create a block to start logging sessions. Each block is a phase of your training (e.g., Weeks 1–8, Weeks 9–16).</p>
+      <div class="empty-actions">
+        <button class="primary-btn" data-action="quickstart">${I.plus()}<span>Quick-start with my plan</span></button>
+        <button class="secondary-btn" data-action="goto-blocks">${I.plus()}<span>Create blank block</span></button>
+      </div>
+    </div>
+  `;
+}
+
+function renderDayGrid(block, suggestedDayId) {
+  return `
+    <h2 class="section-h">Start session</h2>
+    <div class="day-grid">
+      ${block.days.map(day => `
+        <button class="day-btn ${day.id === suggestedDayId ? 'suggested' : ''}" data-action="start-session" data-day-id="${day.id}">
+          <div class="day-btn-top">
+            <span class="day-label">${escapeHtml(day.name)}</span>
+            ${day.id === suggestedDayId ? '<span class="next-pill">next</span>' : ''}
+          </div>
+          <div class="day-subtitle">${escapeHtml(day.subtitle || '')}</div>
+          <div class="day-meta">${day.exercises.length} exercise${day.exercises.length === 1 ? '' : 's'}</div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ============================================================
+// PHASES VIEW
+// ============================================================
+function renderPhases() {
+  const week = getWeekNumber(data.startDate);
+  const activePhase = getPhase(week, data.phases);
+  return `
+    <div class="view">
+      ${topbar('Phases', `Week ${week} of training`)}
+      <div>
+        ${data.phases.map(p => `
+          <div class="phase-block ${p.id === activePhase.id ? 'active' : ''}">
+            <div class="phase-block-head">
+              <div>
+                <span class="phase-block-name">${escapeHtml(p.name)}</span>
+                ${p.id === activePhase.id ? '<span class="active-badge">current</span>' : ''}
+              </div>
+              <div class="phase-block-weeks">${escapeHtml(p.weeks)}</div>
+            </div>
+            <div class="phase-block-tagline">${escapeHtml(p.tagline)}</div>
+            <div class="phase-block-desc">${escapeHtml(p.desc)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// BLOCKS LIST VIEW
+// ============================================================
+function renderBlocksList() {
+  return `
+    <div class="view">
+      ${topbar('Training Blocks', `${data.blocks.length} total`)}
+      ${data.blocks.length === 0 ? `
+        <div class="empty-state">
+          ${I.dumbbell()}
+          <p>No blocks yet</p>
+          <p class="muted">A block is a phase of your training. You can have several and switch between them.</p>
+        </div>
+      ` : `
+        <div class="block-list">
+          ${data.blocks.map(b => `
+            <div class="block-item ${b.id === data.activeBlockId ? 'active' : ''}">
+              <div class="block-info" data-action="edit-block" data-block-id="${b.id}">
+                <div class="block-name">${escapeHtml(b.name)} ${b.id === data.activeBlockId ? '<span class="active-badge">active</span>' : ''}</div>
+                <div class="block-meta">${escapeHtml(b.weeksLabel || '')} · ${b.days.length} day${b.days.length === 1 ? '' : 's'} · ${b.days.reduce((sum, d) => sum + d.exercises.length, 0)} exercises</div>
+              </div>
+              <div class="block-actions">
+                ${b.id !== data.activeBlockId ? `<button class="block-action-btn" data-action="activate-block" data-block-id="${b.id}" aria-label="Make active">${I.check(14)}</button>` : ''}
+                <button class="block-action-btn danger" data-action="delete-block" data-block-id="${b.id}" aria-label="Delete">${I.trash()}</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+      <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+        <button class="primary-btn" data-action="create-block">${I.plus()}<span>New block</span></button>
+        ${data.blocks.length === 0 ? `<button class="secondary-btn" data-action="quickstart">${I.plus()}<span>Or quick-start with my plan</span></button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// BLOCK EDIT VIEW
+// ============================================================
+function renderBlockEdit() {
+  const block = data.blocks.find(b => b.id === route.params.blockId);
+  if (!block) { navigate('blocks'); return ''; }
+  const activeDayId = route.params.dayId || block.days[0]?.id;
+  const activeDay = block.days.find(d => d.id === activeDayId);
+
+  return `
+    <div class="view">
+      ${topbar(escapeHtml(block.name), 'Edit block')}
+
+      <button class="secondary-btn" data-action="edit-block-meta" data-block-id="${block.id}" style="margin-bottom: 16px;">${I.edit()}<span>Edit block name / weeks</span></button>
+
+      <h2 class="section-h">Training days</h2>
+      <div class="editor-day-tabs">
+        ${block.days.map(d => `
+          <button class="day-tab ${d.id === activeDayId ? 'active' : ''}" data-action="select-day" data-block-id="${block.id}" data-day-id="${d.id}">
+            ${escapeHtml(d.name)}
+          </button>
+        `).join('')}
+        <button class="day-tab add-tab" data-action="add-day" data-block-id="${block.id}">${I.plus(12)} Day</button>
+      </div>
+
+      ${activeDay ? renderDayEditor(block, activeDay) : '<p class="muted">No days yet. Add one to get started.</p>'}
+    </div>
+  `;
+}
+
+function renderDayEditor(block, day) {
+  return `
+    <div class="settings-section">
+      <h3>${escapeHtml(day.name)}</h3>
+      <p>${escapeHtml(day.subtitle || 'No subtitle')}</p>
+      <div style="display: flex; gap: 8px;">
+        <button class="secondary-btn" data-action="edit-day" data-block-id="${block.id}" data-day-id="${day.id}" style="flex: 1;">${I.edit()}<span>Edit day</span></button>
+        ${block.days.length > 1 ? `<button class="danger-btn" data-action="delete-day" data-block-id="${block.id}" data-day-id="${day.id}" style="flex: 0 0 auto; width: auto; padding: 12px 16px;">${I.trash()}</button>` : ''}
+      </div>
+    </div>
+
+    <h2 class="section-h">Exercises <button class="add-link" data-action="add-exercise" data-block-id="${block.id}" data-day-id="${day.id}">+ Add</button></h2>
+    ${day.exercises.length === 0 ? `
+      <div class="empty-state">
+        <p>No exercises yet</p>
+      </div>
+    ` : `
+      <div class="editor-ex-list">
+        ${day.exercises.map((ex, idx) => `
+          <div class="editor-ex-row">
+            <div class="editor-ex-info" data-action="edit-exercise" data-block-id="${block.id}" data-day-id="${day.id}" data-ex-id="${ex.id}">
+              <div class="editor-ex-name">${escapeHtml(ex.name)}</div>
+              <div class="editor-ex-meta">${escapeHtml(truncate(ex.scheme, 50))}</div>
+            </div>
+            <div class="editor-ex-actions">
+              ${idx > 0 ? `<button class="reorder-btn" data-action="move-ex" data-block-id="${block.id}" data-day-id="${day.id}" data-ex-id="${ex.id}" data-dir="up">${I.up()}</button>` : ''}
+              ${idx < day.exercises.length - 1 ? `<button class="reorder-btn" data-action="move-ex" data-block-id="${block.id}" data-day-id="${day.id}" data-ex-id="${ex.id}" data-dir="down">${I.down()}</button>` : ''}
+              <button class="reorder-btn" data-action="delete-exercise" data-block-id="${block.id}" data-day-id="${day.id}" data-ex-id="${ex.id}">${I.trash()}</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `}
+  `;
+}
+
+// ============================================================
+// EXERCISE EDIT VIEW
+// ============================================================
+function renderExerciseEdit() {
+  const { blockId, dayId, exId, isNew } = route.params;
+  const block = data.blocks.find(b => b.id === blockId);
+  const day = block?.days.find(d => d.id === dayId);
+  const ex = exId && day ? day.exercises.find(e => e.id === exId) : null;
+
+  // Use route.params.draft as form state across re-renders
+  const draft = route.params.draft || (ex ? { ...ex } : {
+    id: uid('e'),
+    name: '',
+    scheme: '',
+    rest: '',
+    target: '',
+    goal: '',
+    progression: '',
+    rotation: '',
+    type: 'weight',
+  });
+  route.params.draft = draft;
+
+  return `
+    <div class="view">
+      ${topbar(isNew ? 'New exercise' : 'Edit exercise', escapeHtml(day?.name || ''))}
+
+      <label class="field">
+        <span>Exercise name</span>
+        <input type="text" data-bind="name" value="${escapeHtml(draft.name)}" placeholder="e.g., Romanian Deadlift">
+      </label>
+
+      <label class="field">
+        <span>Type (determines what you log)</span>
+        <select data-bind="type">
+          <option value="weight" ${draft.type === 'weight' ? 'selected' : ''}>Weight × Reps</option>
+          <option value="isometric" ${draft.type === 'isometric' ? 'selected' : ''}>Isometric hold (seconds)</option>
+          <option value="isometric_weighted" ${draft.type === 'isometric_weighted' ? 'selected' : ''}>Weighted hold (seconds + lbs)</option>
+          <option value="cardio" ${draft.type === 'cardio' ? 'selected' : ''}>Cardio (minutes)</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Sets × Reps / Tempo (full description)</span>
+        <textarea data-bind="scheme" rows="3" placeholder="e.g., 4 × 8. 3 sec eccentric, 1 sec pause, 2 sec concentric.">${escapeHtml(draft.scheme)}</textarea>
+      </label>
+
+      <label class="field">
+        <span>Rest between sets</span>
+        <input type="text" data-bind="rest" value="${escapeHtml(draft.rest)}" placeholder="e.g., 90 sec">
+      </label>
+
+      <label class="field">
+        <span>Target muscles</span>
+        <textarea data-bind="target" rows="2" placeholder="Primary: ... Secondary: ...">${escapeHtml(draft.target)}</textarea>
+      </label>
+
+      <label class="field">
+        <span>Goal alignment</span>
+        <textarea data-bind="goal" rows="3" placeholder="Why this exercise, what it addresses">${escapeHtml(draft.goal)}</textarea>
+      </label>
+
+      <label class="field">
+        <span>Progression rules (8 weeks)</span>
+        <textarea data-bind="progression" rows="2" placeholder="How to increase load over time">${escapeHtml(draft.progression)}</textarea>
+      </label>
+
+      <label class="field">
+        <span>Week 8+ rotation exercise</span>
+        <textarea data-bind="rotation" rows="2" placeholder="What to swap to in the next block">${escapeHtml(draft.rotation)}</textarea>
+      </label>
+
+      <div class="action-row">
+        <button class="secondary-btn" data-action="cancel-edit">Cancel</button>
+        <button class="primary-btn" data-action="save-exercise" data-block-id="${blockId}" data-day-id="${dayId}" data-is-new="${isNew ? '1' : '0'}">${I.save()}<span>Save exercise</span></button>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// SESSION VIEW
+// ============================================================
+function renderSession() {
+  const { sessionId } = route.params;
+  const session = data.sessions.find(s => s.id === sessionId);
+  if (!session) { navigate('home'); return ''; }
+  const block = data.blocks.find(b => b.id === session.blockId);
+  const day = block?.days.find(d => d.id === session.dayId);
+  if (!day) { navigate('home'); return ''; }
+
+  const completedCount = day.exercises.filter(e => session.entries?.[e.id]?.sets?.length > 0).length;
+  const completedAny = completedCount > 0;
+  const otherSessions = data.sessions.filter(s => s.id !== session.id);
+
+  return `
+    <div class="view">
+      ${topbar(escapeHtml(day.name), escapeHtml(day.subtitle || ''))}
+
+      <div class="session-progress-bar">
+        <div class="bar-track"><div class="bar-fill" style="width: ${(completedCount / day.exercises.length) * 100}%"></div></div>
+        <div class="progress-text">${completedCount} of ${day.exercises.length}</div>
+      </div>
+
+      <div class="exercise-list">
+        ${day.exercises.map((ex, idx) => {
+          const sets = session.entries?.[ex.id]?.sets || [];
+          const isDone = sets.length > 0;
+          const last = getLastEntryForExercise(otherSessions, ex.id);
+          return `
+            <button class="exercise-card ${isDone ? 'done' : ''}" data-action="open-exercise" data-ex-id="${ex.id}">
+              <div class="ex-num">${String(idx + 1).padStart(2, '0')}</div>
+              <div class="ex-body">
+                <div class="ex-name">${escapeHtml(ex.name)}</div>
+                <div class="ex-scheme">${escapeHtml(truncate(ex.scheme, 60))}</div>
+                ${last ? `<div class="ex-last">last: ${escapeHtml(summarizeSets(last.entry.sets, ex.type))} · ${daysAgo(last.date)}</div>` : ''}
+                ${isDone ? `<div class="ex-current">today: ${escapeHtml(summarizeSets(sets, ex.type))}</div>` : ''}
+              </div>
+              <div class="ex-icon">${isDone ? I.check() : I.chevR(20)}</div>
+            </button>
+          `;
+        }).join('')}
+      </div>
+
+      <button class="primary-btn" data-action="finish-session" ${!completedAny ? 'disabled' : ''}>${I.save()}<span>Finish session</span></button>
+    </div>
+  `;
+}
+
+// ============================================================
+// EXERCISE LOG VIEW
+// ============================================================
+function renderExerciseLog() {
+  const { sessionId, exId } = route.params;
+  const session = data.sessions.find(s => s.id === sessionId);
+  if (!session) { navigate('home'); return ''; }
+  const block = data.blocks.find(b => b.id === session.blockId);
+  const day = block?.days.find(d => d.id === session.dayId);
+  const ex = day?.exercises.find(e => e.id === exId);
+  if (!ex) { navigate('home'); return ''; }
+
+  const otherSessions = data.sessions.filter(s => s.id !== session.id);
+  const last = getLastEntryForExercise(otherSessions, exId);
+  const existingSets = session.entries?.[exId]?.sets || [];
+
+  // Initialize working sets state (held in route.params for cross-render persistence)
+  if (!route.params.workingSets) {
+    if (existingSets.length > 0) {
+      route.params.workingSets = existingSets.map(s => ({ ...s }));
+    } else if (last) {
+      route.params.workingSets = last.entry.sets.map(s => ({ ...s }));
+    } else {
+      const setCount = parseSetCount(ex.scheme);
+      route.params.workingSets = Array.from({ length: setCount }, () => emptySet(ex.type));
+    }
+  }
+  const sets = route.params.workingSets;
+
+  return `
+    <div class="view">
+      ${topbar(escapeHtml(ex.name), escapeHtml(day.name))}
+
+      <div class="ex-header-card">
+        <div class="ex-header-scheme">${escapeHtml(ex.scheme)}</div>
+        <span class="ex-header-rest">${I.clock()}<span>${escapeHtml(ex.rest || '—')} rest</span></span>
+      </div>
+
+      ${renderInfoSection(exId, 'target', 'Target muscles', ex.target, I.target())}
+      ${renderInfoSection(exId, 'goal', 'Goal alignment', ex.goal, I.flag())}
+      ${renderInfoSection(exId, 'progression', 'Progression (8 wks)', ex.progression, I.arrow())}
+      ${renderInfoSection(exId, 'rotation', 'Week 8+ rotation', ex.rotation, I.rotate())}
+
+      ${last ? `
+        <div class="last-time-card">
+          <div class="last-time-label">Last time · ${fmtDate(last.date)} · ${daysAgo(last.date)}</div>
+          <div class="last-time-sets">
+            ${last.entry.sets.map((s, i) => `
+              <div class="last-set"><span class="last-set-num">${i + 1}</span><span>${escapeHtml(formatSetDisplay(s, ex.type))}</span></div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <h3 class="section-h" style="margin-top: 18px;">Today\u2019s sets</h3>
+
+      <div class="sets-list">
+        ${sets.map((set, idx) => renderSetRow(idx, set, ex.type, last?.entry.sets[idx], sets.length)).join('')}
+      </div>
+
+      <button class="add-set-btn" data-action="add-set">${I.plus()}<span>Add set</span></button>
+
+      <div class="action-row">
+        <button class="secondary-btn" data-action="goto-progress" data-ex-id="${ex.id}">${I.trend()}<span>Progress</span></button>
+        <button class="primary-btn" data-action="save-sets" data-ex-id="${ex.id}">${I.save()}<span>Save</span></button>
+      </div>
+    </div>
+  `;
+}
+
+function renderInfoSection(exId, key, label, content, icon) {
+  if (!content || !content.trim()) return '';
+  const collapseKey = `${exId}-${key}`;
+  const isOpen = !data.collapsedSections[collapseKey]; // default open
+  return `
+    <details class="info-section" ${isOpen ? 'open' : ''} data-collapse-key="${collapseKey}">
+      <summary>
+        <span class="info-icon">${icon}</span>
+        <span class="info-label">${label}</span>
+        <span class="chev">${I.chev(14)}</span>
+      </summary>
+      <div class="info-body">${escapeHtml(content)}</div>
+    </details>
+  `;
+}
+
+function renderSetRow(idx, set, type, lastSet, totalSets) {
+  const canRemove = totalSets > 1;
+  let inputsHtml = '';
+  if (type === 'weight') {
+    inputsHtml = `
+      ${inputCell('weight', set.weight, lastSet?.weight, 'lbs', idx)}
+      ${inputCell('reps', set.reps, lastSet?.reps, 'reps', idx)}
+    `;
+  } else if (type === 'isometric') {
+    inputsHtml = inputCell('duration', set.duration, lastSet?.duration, 'sec', idx, true);
+  } else if (type === 'isometric_weighted') {
+    inputsHtml = `
+      ${inputCell('duration', set.duration, lastSet?.duration, 'sec', idx)}
+      ${inputCell('weight', set.weight, lastSet?.weight, 'lbs', idx)}
+    `;
+  } else if (type === 'cardio') {
+    inputsHtml = inputCell('duration', set.duration, lastSet?.duration, 'min', idx, true);
+  }
+  return `
+    <div class="set-row">
+      <div class="set-num">${idx + 1}</div>
+      <div class="set-inputs">${inputsHtml}</div>
+      <button class="remove-set" data-action="remove-set" data-idx="${idx}" ${!canRemove ? 'disabled' : ''}>${I.minus()}</button>
+    </div>
+  `;
+}
+
+function inputCell(field, value, last, label, idx, wide) {
+  return `
+    <div class="input-cell ${wide ? 'wide' : ''}">
+      <input type="number" inputmode="decimal" step="any" data-set-input data-idx="${idx}" data-field="${field}" value="${value ?? ''}" placeholder="${last != null ? last : '—'}">
+      <span class="input-label">${label}</span>
+    </div>
+  `;
+}
+
+function emptySet(type) {
+  if (type === 'isometric') return { duration: '' };
+  if (type === 'isometric_weighted') return { duration: '', weight: '' };
+  if (type === 'cardio') return { duration: '' };
+  return { weight: '', reps: '' };
+}
+
+function parseSetCount(scheme) {
+  const m = scheme.match(/^\s*(\d+)\s*[×x]/);
+  return m ? parseInt(m[1]) : 3;
+}
+
+// ============================================================
+// PROGRESS VIEW
+// ============================================================
+function renderProgress() {
+  const activeBlock = getActiveBlock(data);
+  if (!activeBlock) {
+    return `<div class="view">${topbar('Progress', '')}<div class="empty-state">${I.dumbbell()}<p>No active block</p></div></div>`;
+  }
+  const allExercises = activeBlock.days.flatMap(d => d.exercises.map(e => ({ ...e, dayName: d.name })));
+  const currentExId = route.params.exId || allExercises[0]?.id;
+  const ex = allExercises.find(e => e.id === currentExId) || allExercises[0];
+  if (!ex) {
+    return `<div class="view">${topbar('Progress', '')}<div class="empty-state"><p>No exercises in active block</p></div></div>`;
+  }
+
+  // Collect data points across ALL sessions (cross-block) that reference this exercise id
+  const points = data.sessions
+    .filter(s => s.completed && s.entries?.[ex.id]?.sets?.length > 0)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map(s => {
+      const sets = s.entries[ex.id].sets;
+      const date = s.date;
+      const dateLabel = fmtDateShort(s.date);
+      if (ex.type === 'weight') {
+        return { date, dateLabel, weight: Math.max(...sets.map(x => x.weight || 0)), volume: sets.reduce((sum, x) => sum + (x.weight || 0) * (x.reps || 0), 0) };
+      }
+      return { date, dateLabel, duration: Math.max(...sets.map(x => x.duration || 0)), weight: Math.max(...sets.map(x => x.weight || 0)) };
+    });
+
+  let statsHtml = '';
+  let chartsHtml = '';
+  if (points.length === 0) {
+    chartsHtml = `<div class="empty-state">${I.dumbbell()}<p>No data yet for this exercise.</p><p class="muted">Complete a session to see your progression here.</p></div>`;
+  } else {
+    if (ex.type === 'weight') {
+      const first = points[0].weight, last = points[points.length - 1].weight;
+      const peak = Math.max(...points.map(p => p.weight));
+      const change = last - first;
+      statsHtml = statsGrid([
+        ['Sessions', points.length],
+        ['Peak', `${peak} lb`],
+        ['Latest', `${last} lb`],
+        ['Change', `${change >= 0 ? '+' : ''}${change} lb`, change > 0],
+      ]);
+      chartsHtml = `
+        ${renderLineChart('Top set weight', points, 'weight', 'lb', '#d4a574')}
+        ${renderLineChart('Total volume (weight × reps)', points, 'volume', '', '#7ca85a')}
+      `;
+    } else {
+      const first = points[0].duration, last = points[points.length - 1].duration;
+      const peak = Math.max(...points.map(p => p.duration));
+      const change = last - first;
+      statsHtml = statsGrid([
+        ['Sessions', points.length],
+        ['Peak', `${peak}s`],
+        ['Latest', `${last}s`],
+        ['Change', `${change >= 0 ? '+' : ''}${change}s`, change > 0],
+      ]);
+      chartsHtml = renderLineChart('Hold duration', points, 'duration', 's', '#d4a574');
+    }
+  }
+
+  return `
+    <div class="view">
+      ${topbar('Progress', escapeHtml(ex.name))}
+      <button class="exercise-picker-btn" data-action="open-progress-picker">
+        <span>${escapeHtml(ex.name)}</span>
+        <span class="picker-day-tag">${escapeHtml(ex.dayName)}</span>
+      </button>
+      ${statsHtml}
+      ${chartsHtml}
+    </div>
+  `;
+}
+
+function statsGrid(items) {
+  return `<div class="stats-grid">${items.map(([label, value, good]) => `
+    <div class="stat-card ${good ? 'stat-good' : ''}">
+      <div class="stat-card-value">${value}</div>
+      <div class="stat-card-label">${label}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function renderLineChart(title, points, key, unit, color) {
+  if (points.length === 0) return '';
+  const W = 320, H = 180, padL = 32, padR = 8, padT = 14, padB = 22;
+  const values = points.map(p => p[key] || 0);
+  const minV = Math.min(...values);
+  const maxV = Math.max(...values);
+  const range = maxV - minV || 1;
+  const yMin = minV - range * 0.1;
+  const yMax = maxV + range * 0.1;
+  const yRange = yMax - yMin || 1;
+
+  const xStep = points.length > 1 ? (W - padL - padR) / (points.length - 1) : 0;
+  const xy = points.map((p, i) => {
+    const x = padL + i * xStep;
+    const y = padT + (H - padT - padB) * (1 - ((p[key] || 0) - yMin) / yRange);
+    return [x, y, p];
+  });
+
+  // Y-axis labels (3 ticks)
+  const ticks = [yMin, (yMin + yMax) / 2, yMax].map(v => {
+    const y = padT + (H - padT - padB) * (1 - (v - yMin) / yRange);
+    return { v: Math.round(v * 10) / 10, y };
+  });
+
+  const path = xy.map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ');
+  const areaPath = `${path} L ${xy[xy.length - 1][0]} ${H - padB} L ${xy[0][0]} ${H - padB} Z`;
+
+  // X-axis labels: show first, last, middle if many
+  let xLabels = '';
+  if (points.length <= 5) {
+    xLabels = xy.map(([x, , p]) => `<text x="${x}" y="${H - 6}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">${p.dateLabel}</text>`).join('');
+  } else {
+    const idxs = [0, Math.floor(points.length / 2), points.length - 1];
+    xLabels = idxs.map(i => {
+      const [x, , p] = xy[i];
+      return `<text x="${x}" y="${H - 6}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">${p.dateLabel}</text>`;
+    }).join('');
+  }
+
+  return `
+    <div class="chart-wrap">
+      <div class="chart-title">${escapeHtml(title)}</div>
+      <svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+        ${ticks.map(t => `<line x1="${padL}" x2="${W - padR}" y1="${t.y}" y2="${t.y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/><text x="${padL - 6}" y="${t.y + 3}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="end" font-family="JetBrains Mono, monospace">${t.v}${unit}</text>`).join('')}
+        <path d="${areaPath}" fill="${color}" fill-opacity="0.1"/>
+        <path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        ${xy.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.5" fill="${color}"/>`).join('')}
+        ${xLabels}
+      </svg>
+    </div>
+  `;
+}
+
+// ============================================================
+// HISTORY VIEW
+// ============================================================
+function renderHistory() {
+  const sessions = [...data.sessions].filter(s => s.completed).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const kneeData = sessions.filter(s => s.kneePain != null).sort((a, b) => new Date(a.date) - new Date(b.date)).map(s => ({ date: s.date, dateLabel: fmtDateShort(s.date), pain: s.kneePain }));
+  const activeBlock = getActiveBlock(data);
+  const exLookup = (id) => {
+    for (const b of data.blocks) for (const d of b.days) {
+      const e = d.exercises.find(e => e.id === id);
+      if (e) return e;
+    }
+    return null;
+  };
+
+  return `
+    <div class="view">
+      ${topbar('History', `${sessions.length} completed`, [
+        { action: 'open-progress-picker', icon: I.trend(16), label: 'Progress' }
+      ])}
+
+      ${kneeData.length >= 2 ? renderKneeChart(kneeData) : ''}
+
+      <h2 class="section-h">Sessions</h2>
+      ${sessions.length === 0 ? `<div class="empty-state">${I.cal()}<p>No sessions logged yet</p></div>` : `
+        <div class="history-list">
+          ${sessions.map(s => {
+            const block = data.blocks.find(b => b.id === s.blockId);
+            const day = block?.days.find(d => d.id === s.dayId);
+            const dayName = day?.name || s.dayName || 'Workout';
+            return `
+              <div class="history-card">
+                <div class="history-head">
+                  <div>
+                    <div class="history-day">${escapeHtml(dayName)}</div>
+                    <div class="history-date">${fmtDate(s.date)}${block ? ' · ' + escapeHtml(block.name) : ''}</div>
+                  </div>
+                  <button class="block-action-btn danger" data-action="delete-session" data-session-id="${s.id}" aria-label="Delete">${I.trash()}</button>
+                </div>
+                <div class="history-meta">
+                  ${s.kneePain != null ? `<span class="meta-tag pain-tag-${s.kneePain <= 2 ? 'low' : s.kneePain <= 5 ? 'mid' : 'high'}">${I.alert()} knee ${s.kneePain}/10</span>` : ''}
+                  ${s.sleepHours ? `<span class="meta-tag">😴 ${s.sleepHours}h</span>` : ''}
+                  <span class="meta-tag">${Object.keys(s.entries || {}).length} exercises</span>
+                </div>
+                <details class="history-details">
+                  <summary>View exercises</summary>
+                  <div class="history-entries">
+                    ${Object.entries(s.entries || {}).map(([exId, entry]) => {
+                      const ex = exLookup(exId);
+                      if (!ex) return '';
+                      return `<button class="history-entry-row" data-action="goto-progress" data-ex-id="${exId}">
+                        <span class="he-name">${escapeHtml(ex.name)}</span>
+                        <span class="he-summary">${escapeHtml(summarizeSets(entry.sets, ex.type))}</span>
+                      </button>`;
+                    }).join('')}
+                  </div>
+                  ${s.notes ? `<div class="history-notes">"${escapeHtml(s.notes)}"</div>` : ''}
+                </details>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function renderKneeChart(kneeData) {
+  const W = 320, H = 180, padL = 28, padR = 8, padT = 14, padB = 22;
+  const xStep = kneeData.length > 1 ? (W - padL - padR) / (kneeData.length - 1) : 0;
+  const xy = kneeData.map((p, i) => {
+    const x = padL + i * xStep;
+    const y = padT + (H - padT - padB) * (1 - p.pain / 10);
+    return [x, y, p];
+  });
+  const path = xy.map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ');
+  const cautionY = padT + (H - padT - padB) * (1 - 3 / 10);
+  let xLabels = '';
+  if (kneeData.length <= 5) {
+    xLabels = xy.map(([x, , p]) => `<text x="${x}" y="${H - 6}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">${p.dateLabel}</text>`).join('');
+  } else {
+    [0, Math.floor(kneeData.length / 2), kneeData.length - 1].forEach(i => {
+      const [x, , p] = xy[i];
+      xLabels += `<text x="${x}" y="${H - 6}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">${p.dateLabel}</text>`;
+    });
+  }
+  return `
+    <div class="chart-wrap">
+      <div class="chart-title">Knee pain over time (0–10)</div>
+      <svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+        ${[0, 5, 10].map(v => {
+          const y = padT + (H - padT - padB) * (1 - v / 10);
+          return `<line x1="${padL}" x2="${W - padR}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/><text x="${padL - 6}" y="${y + 3}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="end" font-family="JetBrains Mono, monospace">${v}</text>`;
+        }).join('')}
+        <line x1="${padL}" x2="${W - padR}" y1="${cautionY}" y2="${cautionY}" stroke="rgba(220, 100, 80, 0.5)" stroke-dasharray="3 3"/>
+        <text x="${W - padR - 4}" y="${cautionY - 3}" fill="rgba(220,100,80,0.7)" font-size="9" text-anchor="end" font-family="JetBrains Mono, monospace">caution (3/10)</text>
+        <path d="${path}" fill="none" stroke="#c98a6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        ${xy.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.5" fill="#c98a6b"/>`).join('')}
+        ${xLabels}
+      </svg>
+    </div>
+  `;
+}
+
+// ============================================================
+// SETTINGS VIEW
+// ============================================================
+function renderSettings() {
+  const sessions = data.sessions.filter(s => s.completed).length;
+  const totalSize = new Blob([JSON.stringify(data)]).size;
+  return `
+    <div class="view">
+      ${topbar('Settings', '')}
+
+      <div class="settings-section">
+        <h3>Training start date</h3>
+        <p>Used to calculate the current week and phase. Set this to when you started Phase 1.</p>
+        <label class="field">
+          <span>Start date</span>
+          <input type="date" data-action="set-start-date" value="${data.startDate.slice(0, 10)}">
+        </label>
+      </div>
+
+      <div class="settings-section">
+        <h3>Training blocks</h3>
+        <p>You have ${data.blocks.length} block${data.blocks.length === 1 ? '' : 's'}. The active block determines which exercises are available when starting a session.</p>
+        <button class="secondary-btn" data-action="goto-blocks">${I.edit()}<span>Manage blocks</span></button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Export your data</h3>
+        <p>${sessions} completed session${sessions === 1 ? '' : 's'}. Your data is stored locally on this device. Export regularly to back up. The export is a plain text file you can save to Notes, iCloud, email, etc.</p>
+        <div style="display: flex; gap: 8px; flex-direction: column;">
+          <button class="primary-btn" data-action="export-data">${I.save()}<span>Export to text file</span></button>
+          <button class="secondary-btn" data-action="copy-data">${I.notes()}<span>Copy to clipboard</span></button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Import data</h3>
+        <p>Paste a previously exported JSON to restore your data. This will overwrite everything currently in the app.</p>
+        <button class="secondary-btn" data-action="import-data">${I.save()}<span>Import from text</span></button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Storage</h3>
+        <p>Local storage size: ~${(totalSize / 1024).toFixed(1)} KB</p>
+      </div>
+
+      <div class="settings-section">
+        <h3 style="color: var(--red);">Danger zone</h3>
+        <p>This erases everything: blocks, sessions, all logged data. There is no undo.</p>
+        <button class="danger-btn" data-action="reset-all">${I.trash()}<span>Reset all data</span></button>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// SHARED COMPONENTS
+// ============================================================
+function topbar(title, subtitle, actions = []) {
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-action="back">${I.chevL()}</button>
+      <div class="topbar-text">
+        <div class="topbar-title">${title}</div>
+        ${subtitle ? `<div class="topbar-subtitle">${subtitle}</div>` : ''}
+      </div>
+      <div class="topbar-actions">
+        ${actions.map(a => `<button class="topbar-action" data-action="${a.action}" aria-label="${a.label}">${a.icon}</button>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function truncate(s, n) {
+  if (!s) return '';
+  return s.length > n ? s.slice(0, n - 1) + '…' : s;
+}
+
+// ============================================================
+// MODAL SYSTEM
+// ============================================================
+function openModal(html) {
+  closeModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `<div class="modal" onclick="event.stopPropagation()">${html}</div>`;
+  overlay.addEventListener('click', closeModal);
+  document.body.appendChild(overlay);
+  attachModalHandlers();
+}
+
+function closeModal() {
+  document.querySelectorAll('.modal-overlay').forEach(o => o.remove());
+}
+
+function attachModalHandlers() {
+  document.querySelectorAll('.modal [data-modal-action]').forEach(el => {
+    el.addEventListener('click', e => {
+      const action = el.dataset.modalAction;
+      handleModalAction(action, el);
+    });
+  });
+  document.querySelectorAll('.modal .pain-btn').forEach(el => {
+    el.addEventListener('click', e => {
+      const val = parseInt(el.dataset.val);
+      document.querySelectorAll('.modal .pain-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      const tier = val <= 2 ? 'pain-low' : val <= 5 ? 'pain-mid' : 'pain-high';
+      el.classList.remove('pain-low', 'pain-mid', 'pain-high');
+      el.classList.add(tier);
+      const hidden = document.querySelector('.modal [data-knee-val]');
+      if (hidden) hidden.value = val;
+    });
+  });
+}
+
+function handleModalAction(action, el) {
+  // Block create / edit
+  if (action === 'create-block-confirm') {
+    const name = document.querySelector('.modal [data-bind="name"]').value.trim();
+    const weeks = document.querySelector('.modal [data-bind="weeks"]').value.trim();
+    if (!name) { showToast('Block needs a name'); return; }
+    const newBlock = {
+      id: uid('b'),
+      name,
+      weeksLabel: weeks,
+      days: [{ id: uid('d'), name: 'Day 1', subtitle: '', exercises: [] }],
+    };
+    data.blocks.push(newBlock);
+    if (!data.activeBlockId) data.activeBlockId = newBlock.id;
+    persist();
+    closeModal();
+    navigate('block-edit', { blockId: newBlock.id });
+  }
+  if (action === 'edit-block-meta-confirm') {
+    const block = data.blocks.find(b => b.id === el.dataset.blockId);
+    if (!block) return;
+    block.name = document.querySelector('.modal [data-bind="name"]').value.trim() || block.name;
+    block.weeksLabel = document.querySelector('.modal [data-bind="weeks"]').value.trim();
+    persist();
+    closeModal();
+    render();
+  }
+  if (action === 'edit-day-confirm') {
+    const { blockId, dayId } = el.dataset;
+    const block = data.blocks.find(b => b.id === blockId);
+    const day = block?.days.find(d => d.id === dayId);
+    if (!day) return;
+    day.name = document.querySelector('.modal [data-bind="name"]').value.trim() || day.name;
+    day.subtitle = document.querySelector('.modal [data-bind="subtitle"]').value.trim();
+    persist();
+    closeModal();
+    render();
+  }
+  if (action === 'add-day-confirm') {
+    const block = data.blocks.find(b => b.id === el.dataset.blockId);
+    if (!block) return;
+    const name = document.querySelector('.modal [data-bind="name"]').value.trim();
+    const subtitle = document.querySelector('.modal [data-bind="subtitle"]').value.trim();
+    if (!name) { showToast('Day needs a name'); return; }
+    const newDay = { id: uid('d'), name, subtitle, exercises: [] };
+    block.days.push(newDay);
+    persist();
+    closeModal();
+    navigate('block-edit', { blockId: block.id, dayId: newDay.id });
+  }
+  if (action === 'finish-session-confirm') {
+    const session = data.sessions.find(s => s.id === route.params.sessionId);
+    if (!session) return;
+    const kneeEl = document.querySelector('.modal [data-knee-val]');
+    const sleepEl = document.querySelector('.modal [data-bind="sleep"]');
+    const notesEl = document.querySelector('.modal [data-bind="notes"]');
+    session.kneePain = kneeEl?.value ? parseInt(kneeEl.value) : null;
+    session.sleepHours = sleepEl?.value ? parseFloat(sleepEl.value) : null;
+    session.notes = notesEl?.value || '';
+    session.completed = true;
+    persist();
+    closeModal();
+    showToast('Session logged ✓');
+    navigate('home');
+  }
+  if (action === 'progress-picker-select') {
+    closeModal();
+    navigate('progress', { exId: el.dataset.exId });
+  }
+  if (action === 'import-confirm') {
+    const txt = document.querySelector('.modal [data-bind="import-text"]').value.trim();
+    try {
+      const parsed = JSON.parse(txt);
+      if (!parsed.blocks || !parsed.sessions) throw new Error('Invalid format');
+      data = parsed;
+      if (!data.phases) data.phases = DEFAULT_PHASES;
+      if (!data.collapsedSections) data.collapsedSections = {};
+      persist();
+      closeModal();
+      showToast('Imported successfully');
+      navigate('home');
+    } catch (e) {
+      showToast('Invalid data — could not import');
+    }
+  }
+}
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+function attachHandlers() {
+  // Generic action buttons
+  document.querySelectorAll('[data-action]').forEach(el => {
+    // Avoid double-binding (data-action elements inside modals are handled separately)
+    if (el.closest('.modal-overlay')) return;
+    el.addEventListener('click', e => {
+      const action = el.dataset.action;
+      handleAction(action, el, e);
+    });
+  });
+  // Set inputs
+  document.querySelectorAll('[data-set-input]').forEach(el => {
+    el.addEventListener('input', e => {
+      const idx = parseInt(el.dataset.idx);
+      const field = el.dataset.field;
+      if (route.params.workingSets) {
+        route.params.workingSets[idx][field] = el.value;
+      }
+    });
+  });
+  // Form bindings (for exercise-edit page)
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    if (el.closest('.modal-overlay')) return;
+    el.addEventListener('input', e => {
+      const field = el.dataset.bind;
+      if (route.params.draft && route.view === 'exercise-edit') {
+        route.params.draft[field] = el.value;
+      }
+    });
+    el.addEventListener('change', e => {
+      const field = el.dataset.bind;
+      if (route.params.draft && route.view === 'exercise-edit') {
+        route.params.draft[field] = el.value;
+      }
+    });
+  });
+  // Info section collapse persistence
+  document.querySelectorAll('.info-section[data-collapse-key]').forEach(el => {
+    el.addEventListener('toggle', e => {
+      const key = el.dataset.collapseKey;
+      if (el.open) delete data.collapsedSections[key];
+      else data.collapsedSections[key] = true;
+      persist();
+    });
+  });
+}
+
+function handleAction(action, el, e) {
+  switch (action) {
+    case 'back': handleBack(); break;
+    case 'goto-settings': navigate('settings'); break;
+    case 'goto-phases': navigate('phases'); break;
+    case 'goto-blocks': navigate('blocks'); break;
+    case 'goto-history': navigate('history'); break;
+    case 'goto-progress': navigate('progress', { exId: el.dataset.exId }); break;
+    case 'quickstart': handleQuickstart(); break;
+    case 'create-block': handleCreateBlock(); break;
+    case 'activate-block': handleActivateBlock(el.dataset.blockId); break;
+    case 'delete-block': handleDeleteBlock(el.dataset.blockId); break;
+    case 'edit-block': navigate('block-edit', { blockId: el.dataset.blockId }); break;
+    case 'edit-block-meta': handleEditBlockMeta(el.dataset.blockId); break;
+    case 'select-day': navigate('block-edit', { blockId: el.dataset.blockId, dayId: el.dataset.dayId }); break;
+    case 'add-day': handleAddDay(el.dataset.blockId); break;
+    case 'edit-day': handleEditDay(el.dataset.blockId, el.dataset.dayId); break;
+    case 'delete-day': handleDeleteDay(el.dataset.blockId, el.dataset.dayId); break;
+    case 'add-exercise': navigate('exercise-edit', { blockId: el.dataset.blockId, dayId: el.dataset.dayId, isNew: true, draft: null }); break;
+    case 'edit-exercise': navigate('exercise-edit', { blockId: el.dataset.blockId, dayId: el.dataset.dayId, exId: el.dataset.exId, isNew: false, draft: null }); break;
+    case 'delete-exercise': handleDeleteExercise(el.dataset.blockId, el.dataset.dayId, el.dataset.exId); break;
+    case 'move-ex': handleMoveExercise(el.dataset.blockId, el.dataset.dayId, el.dataset.exId, el.dataset.dir); break;
+    case 'cancel-edit': handleBack(); break;
+    case 'save-exercise': handleSaveExercise(el.dataset.blockId, el.dataset.dayId, el.dataset.isNew === '1'); break;
+    case 'start-session': handleStartSession(el.dataset.dayId); break;
+    case 'open-exercise': navigate('exercise', { sessionId: route.params.sessionId, exId: el.dataset.exId, workingSets: null }); break;
+    case 'add-set': handleAddSet(); break;
+    case 'remove-set': handleRemoveSet(parseInt(el.dataset.idx)); break;
+    case 'save-sets': handleSaveSets(el.dataset.exId); break;
+    case 'finish-session': handleFinishSession(); break;
+    case 'delete-session': handleDeleteSession(el.dataset.sessionId); break;
+    case 'open-progress-picker': handleOpenProgressPicker(); break;
+    case 'set-start-date': handleSetStartDate(el.value); break;
+    case 'export-data': handleExport(); break;
+    case 'copy-data': handleCopy(); break;
+    case 'import-data': handleImport(); break;
+    case 'reset-all': handleResetAll(); break;
+  }
+}
+
+function handleBack() {
+  // Simple back logic: based on current view
+  switch (route.view) {
+    case 'home': break; // no back
+    case 'session': navigate('home'); break;
+    case 'exercise':
+      if (route.params.sessionId) navigate('session', { sessionId: route.params.sessionId });
+      else navigate('home');
+      break;
+    case 'exercise-edit':
+      navigate('block-edit', { blockId: route.params.blockId, dayId: route.params.dayId });
+      break;
+    case 'block-edit': navigate('blocks'); break;
+    case 'blocks': navigate('home'); break;
+    case 'phases': navigate('home'); break;
+    case 'progress':
+      if (route.params.sessionId) navigate('session', { sessionId: route.params.sessionId });
+      else navigate('history');
+      break;
+    case 'history': navigate('home'); break;
+    case 'settings': navigate('home'); break;
+    default: navigate('home');
+  }
+}
+
+function handleQuickstart() {
+  if (!confirm('This will create "Block 1 — Weeks 1–8" with all 21 exercises from your plan, pre-filled with target muscles, goal alignment, progression, and rotation notes. Continue?')) return;
+  const block = makePresetBlock1();
+  data.blocks.push(block);
+  data.activeBlockId = block.id;
+  persist();
+  showToast('Block created ✓');
+  navigate('home');
+}
+
+function handleCreateBlock() {
+  openModal(`
+    <h3>New training block</h3>
+    <label class="field">
+      <span>Block name</span>
+      <input type="text" data-bind="name" placeholder="e.g., Block 2 — Weeks 9–16" autofocus>
+    </label>
+    <label class="field">
+      <span>Weeks label (optional)</span>
+      <input type="text" data-bind="weeks" placeholder="e.g., Wk 9–16">
+    </label>
+    <div class="modal-actions">
+      <button class="secondary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Cancel</button>
+      <button class="primary-btn" data-modal-action="create-block-confirm">Create</button>
+    </div>
+  `);
+}
+
+function handleEditBlockMeta(blockId) {
+  const block = data.blocks.find(b => b.id === blockId);
+  if (!block) return;
+  openModal(`
+    <h3>Edit block</h3>
+    <label class="field">
+      <span>Block name</span>
+      <input type="text" data-bind="name" value="${escapeHtml(block.name)}" autofocus>
+    </label>
+    <label class="field">
+      <span>Weeks label</span>
+      <input type="text" data-bind="weeks" value="${escapeHtml(block.weeksLabel || '')}">
+    </label>
+    <div class="modal-actions">
+      <button class="secondary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Cancel</button>
+      <button class="primary-btn" data-modal-action="edit-block-meta-confirm" data-block-id="${blockId}">Save</button>
+    </div>
+  `);
+}
+
+function handleActivateBlock(blockId) {
+  data.activeBlockId = blockId;
+  persist();
+  showToast('Block activated');
+  render();
+}
+
+function handleDeleteBlock(blockId) {
+  if (!confirm('Delete this block? Sessions logged for it will remain in history but the block itself will be gone.')) return;
+  data.blocks = data.blocks.filter(b => b.id !== blockId);
+  if (data.activeBlockId === blockId) {
+    data.activeBlockId = data.blocks[0]?.id || null;
+  }
+  persist();
+  showToast('Block deleted');
+  render();
+}
+
+function handleAddDay(blockId) {
+  openModal(`
+    <h3>Add training day</h3>
+    <label class="field">
+      <span>Day name</span>
+      <input type="text" data-bind="name" placeholder="e.g., Day 4 — Mobility" autofocus>
+    </label>
+    <label class="field">
+      <span>Subtitle / focus (optional)</span>
+      <input type="text" data-bind="subtitle" placeholder="e.g., Active recovery">
+    </label>
+    <div class="modal-actions">
+      <button class="secondary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Cancel</button>
+      <button class="primary-btn" data-modal-action="add-day-confirm" data-block-id="${blockId}">Add</button>
+    </div>
+  `);
+}
+
+function handleEditDay(blockId, dayId) {
+  const block = data.blocks.find(b => b.id === blockId);
+  const day = block?.days.find(d => d.id === dayId);
+  if (!day) return;
+  openModal(`
+    <h3>Edit day</h3>
+    <label class="field">
+      <span>Day name</span>
+      <input type="text" data-bind="name" value="${escapeHtml(day.name)}" autofocus>
+    </label>
+    <label class="field">
+      <span>Subtitle / focus</span>
+      <input type="text" data-bind="subtitle" value="${escapeHtml(day.subtitle || '')}">
+    </label>
+    <div class="modal-actions">
+      <button class="secondary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Cancel</button>
+      <button class="primary-btn" data-modal-action="edit-day-confirm" data-block-id="${blockId}" data-day-id="${dayId}">Save</button>
+    </div>
+  `);
+}
+
+function handleDeleteDay(blockId, dayId) {
+  if (!confirm('Delete this day and all its exercises?')) return;
+  const block = data.blocks.find(b => b.id === blockId);
+  if (!block) return;
+  block.days = block.days.filter(d => d.id !== dayId);
+  persist();
+  showToast('Day deleted');
+  navigate('block-edit', { blockId });
+}
+
+function handleDeleteExercise(blockId, dayId, exId) {
+  if (!confirm('Delete this exercise?')) return;
+  const block = data.blocks.find(b => b.id === blockId);
+  const day = block?.days.find(d => d.id === dayId);
+  if (!day) return;
+  day.exercises = day.exercises.filter(e => e.id !== exId);
+  persist();
+  render();
+}
+
+function handleMoveExercise(blockId, dayId, exId, dir) {
+  const block = data.blocks.find(b => b.id === blockId);
+  const day = block?.days.find(d => d.id === dayId);
+  if (!day) return;
+  const idx = day.exercises.findIndex(e => e.id === exId);
+  if (idx < 0) return;
+  const newIdx = dir === 'up' ? idx - 1 : idx + 1;
+  if (newIdx < 0 || newIdx >= day.exercises.length) return;
+  const [moved] = day.exercises.splice(idx, 1);
+  day.exercises.splice(newIdx, 0, moved);
+  persist();
+  render();
+}
+
+function handleSaveExercise(blockId, dayId, isNew) {
+  const draft = route.params.draft;
+  if (!draft || !draft.name?.trim()) { showToast('Exercise needs a name'); return; }
+  const block = data.blocks.find(b => b.id === blockId);
+  const day = block?.days.find(d => d.id === dayId);
+  if (!day) return;
+  if (isNew) {
+    day.exercises.push(draft);
+  } else {
+    const idx = day.exercises.findIndex(e => e.id === draft.id);
+    if (idx >= 0) day.exercises[idx] = draft;
+  }
+  persist();
+  showToast('Saved ✓');
+  navigate('block-edit', { blockId, dayId });
+}
+
+function handleStartSession(dayId) {
+  const activeBlock = getActiveBlock(data);
+  if (!activeBlock) return;
+  // Look for existing draft session for today + day
+  const todayStr = new Date().toISOString().slice(0, 10);
+  let session = data.sessions.find(s => !s.completed && s.dayId === dayId && s.date.slice(0, 10) === todayStr);
+  if (!session) {
+    session = {
+      id: uid('s'),
+      blockId: activeBlock.id,
+      dayId,
+      date: new Date().toISOString(),
+      entries: {},
+      kneePain: null,
+      sleepHours: null,
+      notes: '',
+      completed: false,
+    };
+    data.sessions.push(session);
+    persist();
+  }
+  navigate('session', { sessionId: session.id });
+}
+
+function handleAddSet() {
+  if (!route.params.workingSets) return;
+  const { sessionId, exId } = route.params;
+  const session = data.sessions.find(s => s.id === sessionId);
+  const block = data.blocks.find(b => b.id === session.blockId);
+  const day = block?.days.find(d => d.id === session.dayId);
+  const ex = day?.exercises.find(e => e.id === exId);
+  if (!ex) return;
+  route.params.workingSets.push(emptySet(ex.type));
+  render();
+}
+
+function handleRemoveSet(idx) {
+  if (!route.params.workingSets || route.params.workingSets.length <= 1) return;
+  route.params.workingSets.splice(idx, 1);
+  render();
+}
+
+function handleSaveSets(exId) {
+  const { sessionId } = route.params;
+  const session = data.sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const raw = route.params.workingSets || [];
+  const clean = raw
+    .filter(s => Object.values(s).some(v => v !== '' && v !== null && v !== undefined))
+    .map(s => {
+      const out = {};
+      for (const [k, v] of Object.entries(s)) {
+        if (v === '' || v === null || v === undefined) {
+          out[k] = null;
+        } else {
+          const n = parseFloat(v);
+          out[k] = isNaN(n) ? v : n;
+        }
+      }
+      return out;
+    });
+  if (!session.entries) session.entries = {};
+  session.entries[exId] = { sets: clean };
+  persist();
+  showToast('Saved ✓');
+  navigate('session', { sessionId });
+}
+
+function handleFinishSession() {
+  const session = data.sessions.find(s => s.id === route.params.sessionId);
+  if (!session) return;
+  openModal(`
+    <h3>Wrap up session</h3>
+    <label class="field">
+      <span>Knee pain (0–10)</span>
+      <div class="pain-row">
+        ${[0,1,2,3,4,5,6,7,8,9,10].map(n => `<button class="pain-btn" data-val="${n}">${n}</button>`).join('')}
+      </div>
+      <input type="hidden" data-knee-val>
+    </label>
+    <label class="field">
+      <span>Sleep last night (hrs)</span>
+      <input type="number" data-bind="sleep" step="0.5" min="0" max="14" placeholder="7.5">
+    </label>
+    <label class="field">
+      <span>Notes (form, fatigue, anything to remember)</span>
+      <textarea data-bind="notes" rows="3" placeholder="Optional"></textarea>
+    </label>
+    <div class="modal-actions">
+      <button class="secondary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Cancel</button>
+      <button class="primary-btn" data-modal-action="finish-session-confirm">${I.save()}<span>Save session</span></button>
+    </div>
+  `);
+}
+
+function handleDeleteSession(sessionId) {
+  if (!confirm('Delete this session?')) return;
+  data.sessions = data.sessions.filter(s => s.id !== sessionId);
+  persist();
+  showToast('Deleted');
+  render();
+}
+
+function handleOpenProgressPicker() {
+  const activeBlock = getActiveBlock(data);
+  if (!activeBlock) { showToast('No active block'); return; }
+  openModal(`
+    <h3>Choose exercise</h3>
+    <div class="picker-list">
+      ${activeBlock.days.map(d => `
+        <div class="picker-day-group">
+          <div class="picker-day-label">${escapeHtml(d.name)}</div>
+          ${d.exercises.map(e => `
+            <button class="picker-row" data-modal-action="progress-picker-select" data-ex-id="${e.id}">${escapeHtml(e.name)}</button>
+          `).join('')}
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function handleSetStartDate(value) {
+  if (!value) return;
+  data.startDate = new Date(value + 'T00:00:00').toISOString();
+  persist();
+  showToast('Start date updated');
+}
+
+function handleExport() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const ts = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `training-log-${ts}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+  showToast('Exported');
+}
+
+function handleCopy() {
+  const text = JSON.stringify(data, null, 2);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard')).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast('Copied to clipboard'); } catch (e) { showToast('Copy failed'); }
+  document.body.removeChild(ta);
+}
+
+function handleImport() {
+  openModal(`
+    <h3>Import data</h3>
+    <p style="font-size: 12.5px; color: var(--text-2); margin-bottom: 12px;">Paste your previously exported JSON below. This will overwrite all current data.</p>
+    <label class="field">
+      <span>Paste JSON</span>
+      <textarea data-bind="import-text" rows="10" placeholder='{"version":1, ...}'></textarea>
+    </label>
+    <div class="modal-actions">
+      <button class="secondary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Cancel</button>
+      <button class="primary-btn" data-modal-action="import-confirm">Import</button>
+    </div>
+  `);
+}
+
+function handleResetAll() {
+  if (!confirm('Erase ALL data? This cannot be undone.')) return;
+  if (!confirm('Really sure? Every session, every block, gone forever.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  data = defaultData();
+  showToast('All data reset');
+  navigate('home');
+}
+
+// ============================================================
+// SERVICE WORKER for offline support
+// ============================================================
+if ('serviceWorker' in navigator) {
+  // Register a minimal inline service worker via data URL approach
+  const swCode = `
+    const CACHE = 'training-log-v1';
+    self.addEventListener('install', e => self.skipWaiting());
+    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+    self.addEventListener('fetch', e => {
+      if (e.request.method !== 'GET') return;
+      e.respondWith(
+        caches.open(CACHE).then(cache =>
+          cache.match(e.request).then(cached => {
+            const fetchPromise = fetch(e.request).then(networkResponse => {
+              if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                cache.put(e.request, networkResponse.clone());
+              }
+              return networkResponse;
+            }).catch(() => cached);
+            return cached || fetchPromise;
+          })
+        )
+      );
+    });
+  `;
+  const swBlob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(swBlob);
+  // Note: Blob URLs for SW only work for the current session, but for GitHub Pages
+  // we'll register a separate sw.js file. Try blob first as a fallback.
+  navigator.serviceWorker.register('./sw.js').catch(() => {
+    // Silent fail — the app still works without offline support
+  });
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+render();
+</script>
+</body>
+</html>
