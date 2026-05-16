@@ -1120,8 +1120,42 @@ function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultData();
     const parsed = JSON.parse(raw);
+    let migrationRan = false;
     // Ensure phases exist (migration safety)
-    if (!parsed.phases) parsed.phases = DEFAULT_PHASES;
+    if (!parsed.phases) { parsed.phases = DEFAULT_PHASES; migrationRan = true; }
+    if (!parsed.collapsedSections) { parsed.collapsedSections = {}; migrationRan = true; }
+    // One-shot migration: upgrade tricep+curl superset to new type
+    if (!parsed.migrations) parsed.migrations = {};
+    if (!parsed.migrations.supersetUpgrade) {
+      for (const block of parsed.blocks || []) {
+        for (const day of block.days || []) {
+          for (const ex of day.exercises || []) {
+            // Detect the exact preset name from quick-start ("Tricep Pushdown + Curl Superset")
+            // Be conservative: require BOTH "pushdown" and "curl" and "superset" in the name,
+            // and never touch exercises a user has already converted to superset type.
+            const n = (ex.name || '').toLowerCase();
+            const isOldTricepCurl = ex.type !== 'superset'
+              && n.includes('pushdown')
+              && n.includes('curl')
+              && n.includes('superset');
+            if (isOldTricepCurl) {
+              ex.type = 'superset';
+              ex.subExercises = [
+                { name: 'Tricep Pushdown', type: 'weight' },
+                { name: 'Dumbbell Curl', type: 'weight' },
+              ];
+              migrationRan = true;
+            }
+          }
+        }
+      }
+      parsed.migrations.supersetUpgrade = true;
+      migrationRan = true;
+    }
+    // Persist immediately if any migration changed data
+    if (migrationRan) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed)); } catch (e) { /* ignore */ }
+    }
     return parsed;
   } catch (e) {
     console.error('Load failed:', e);
@@ -1193,7 +1227,7 @@ function makePresetBlock1() {
           { id: uid('e'), name: 'Barbell Row (Pendlay)', scheme: '4 × 8. 1 sec explosive pull from dead stop, 1 sec squeeze, 3 sec controlled lower to floor. 90 sec rest. Torso near parallel.', rest: '90 sec', target: 'Primary: lower and mid traps, rhomboids, rear delts. Secondary: spinal erectors (isometric), biceps.', goal: 'Horizontal pulling from a hip-hinged position simultaneously trains spinal erectors isometrically — exactly the demand of leaning over a production workstation.', progression: 'Add 5 lbs every 2 weeks. Eccentric is the priority — if you cannot control the 3-sec lower, reduce weight.', rotation: 'Meadows Row (single-arm landmine) — unilateral, greater lat stretch at bottom.', type: 'weight' },
           { id: uid('e'), name: 'Goblet Squat (Slow Eccentric)', scheme: '3 × 12. 5 sec slow descent, 2 sec pause in hole, 2 sec controlled stand. Light to moderate dumbbell. 90 sec rest.', rest: '90 sec', target: 'Primary: quads, glutes. Secondary: core, hip flexors (lengthening), adductors.', goal: 'Ultra-slow eccentrics are the cornerstone of HSR for tendon remodeling. 5-sec lowering maximizes mechanical load on the patellar tendon without high-impact forces.', progression: 'Begin with very light dumbbell. Only add weight when the 5-sec eccentric is consistent across all 3 sets. Expect slow load progression.', rotation: 'Bulgarian Split Squat (rear foot elevated) — unilateral quad/glute demand, hip flexor stretch on rear leg.', type: 'weight' },
           { id: uid('e'), name: 'Cable Upright Row (Wide)', scheme: '3 × 12 with straight bar or rope at low cable. Wide grip (elbows lead above wrists). 2 sec pull, 1 sec at top, 2 sec lower. 75 sec rest.', rest: '75 sec', target: 'Primary: upper traps, medial delts. Secondary: rhomboids, rear delts.', goal: 'Upper trap development is critical for cervical spine stability during prolonged standing. Wide grip removes impingement risk of narrow-grip upright rows.', progression: 'Add 5 lbs every 2 weeks. If any shoulder impingement, switch to DB Lateral Raise immediately.', rotation: 'Dumbbell Farmer\u2019s Carry (3 × 40m walks) — trap endurance, spinal stability in a functional pattern.', type: 'weight' },
-          { id: uid('e'), name: 'Tricep Pushdown + Curl Superset', scheme: '4 × 12 pushdown (2-1-2) immediately followed by 4 × 12 dumbbell curl (2-1-2). 60 sec rest between supersets.', rest: '60 sec', target: 'Triceps (lateral head), biceps (long and short head).', goal: 'Arm hypertrophy accessory work. Kept at end to avoid fatiguing elbow flexors needed for heavy pulling earlier in the session.', progression: 'Add 2.5–5 lbs every 2 weeks on curls. Pushdown progress is slower — focus on full tricep lockout at bottom.', rotation: 'Overhead Tricep Extension + Hammer Curl — different angle, long head of tricep + brachialis.', type: 'weight' },
+          { id: uid('e'), name: 'Tricep Pushdown + Curl Superset', scheme: '4 × 12 pushdown (2-1-2) immediately followed by 4 × 12 dumbbell curl (2-1-2). 60 sec rest between supersets.', rest: '60 sec', target: 'Triceps (lateral head), biceps (long and short head).', goal: 'Arm hypertrophy accessory work. Kept at end to avoid fatiguing elbow flexors needed for heavy pulling earlier in the session.', progression: 'Add 2.5–5 lbs every 2 weeks on curls. Pushdown progress is slower — focus on full tricep lockout at bottom.', rotation: 'Overhead Tricep Extension + Hammer Curl — different angle, long head of tricep + brachialis.', type: 'superset', subExercises: [{ name: 'Tricep Pushdown', type: 'weight' }, { name: 'Dumbbell Curl', type: 'weight' }] },
           { id: uid('e'), name: 'Sled Push (Finisher)', scheme: '3–4 × 20m pushes at slow walk pace. Light load. If no sled: 10 min stationary bike or 10 min treadmill walk at 3.5 mph.', rest: '—', target: 'Hip extension, erector bracing.', goal: 'Sled pushes directly train the same hip extension and erector bracing demanded by walking a production floor for 8+ hours.', progression: 'Steady — this is not a conditioning challenge.', rotation: '—', type: 'cardio' },
         ]
       },
@@ -1230,11 +1264,13 @@ function getActiveBlock(data) {
   return data.blocks.find(b => b.id === data.activeBlockId) || null;
 }
 
-function getLastEntryForExercise(sessions, exId) {
+function getLastEntryForExercise(sessions, exId, dayId = null) {
+  // If dayId is provided, only consider sessions from that specific day
   for (let i = sessions.length - 1; i >= 0; i--) {
     if (!sessions[i].completed) continue;
+    if (dayId && sessions[i].dayId !== dayId) continue;
     const entry = sessions[i].entries?.[exId];
-    if (entry && entry.sets?.length > 0) {
+    if (entry && (entry.sets?.length > 0 || entry.subSets)) {
       return { entry, date: sessions[i].date };
     }
   }
@@ -1253,7 +1289,24 @@ function getPhase(week, phases) {
   return phases[3];
 }
 
-function summarizeSets(sets, type) {
+function summarizeSets(setsOrEntry, type, ex = null) {
+  // Backward compat: if called with the old single-array signature
+  let sets = setsOrEntry;
+  let entry = null;
+  if (setsOrEntry && !Array.isArray(setsOrEntry) && (setsOrEntry.sets || setsOrEntry.subSets)) {
+    entry = setsOrEntry;
+    sets = entry.sets;
+  }
+  if (entry && entry.subSets && ex && isSuperset(ex)) {
+    // Superset summary: "A: 30lb×12 / B: 25lb×12"
+    const parts = ex.subExercises.map((sub, idx) => {
+      const subSets = entry.subSets[idx] || [];
+      if (subSets.length === 0) return null;
+      const label = sub.name.split(' ')[0];
+      return `${label}: ${summarizeSets(subSets, sub.type || 'weight')}`;
+    }).filter(Boolean);
+    return parts.join(' / ') || '—';
+  }
   if (!sets || sets.length === 0) return '—';
   if (type === 'cardio') {
     return sets[0].duration ? `${sets[0].duration} min` : 'logged';
@@ -1598,6 +1651,35 @@ function renderDayEditor(block, day) {
 // ============================================================
 // EXERCISE EDIT VIEW
 // ============================================================
+function renderSubExerciseFields(draft) {
+  if (!draft.subExercises || draft.subExercises.length === 0) {
+    draft.subExercises = [
+      { name: '', type: 'weight' },
+      { name: '', type: 'weight' },
+    ];
+  }
+  return `
+    <div style="background: var(--bg-3); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+      <div style="font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px;">Sub-exercises</div>
+      ${draft.subExercises.map((sub, idx) => `
+        <label class="field">
+          <span>Sub-exercise ${idx + 1} name</span>
+          <input type="text" data-bind-sub="${idx}" data-sub-field="name" value="${escapeHtml(sub.name)}" placeholder="${idx === 0 ? 'e.g., Tricep Pushdown' : 'e.g., Dumbbell Curl'}">
+        </label>
+        <label class="field">
+          <span>Sub-exercise ${idx + 1} type</span>
+          <select data-bind-sub="${idx}" data-sub-field="type">
+            <option value="weight" ${sub.type === 'weight' ? 'selected' : ''}>Weight × Reps</option>
+            <option value="isometric" ${sub.type === 'isometric' ? 'selected' : ''}>Isometric (seconds)</option>
+            <option value="isometric_weighted" ${sub.type === 'isometric_weighted' ? 'selected' : ''}>Weighted hold</option>
+            <option value="cardio" ${sub.type === 'cardio' ? 'selected' : ''}>Cardio (minutes)</option>
+          </select>
+        </label>
+      `).join('')}
+    </div>
+  `;
+}
+
 function renderExerciseEdit() {
   const { blockId, dayId, exId, isNew } = route.params;
   const block = data.blocks.find(b => b.id === blockId);
@@ -1634,8 +1716,11 @@ function renderExerciseEdit() {
           <option value="isometric" ${draft.type === 'isometric' ? 'selected' : ''}>Isometric hold (seconds)</option>
           <option value="isometric_weighted" ${draft.type === 'isometric_weighted' ? 'selected' : ''}>Weighted hold (seconds + lbs)</option>
           <option value="cardio" ${draft.type === 'cardio' ? 'selected' : ''}>Cardio (minutes)</option>
+          <option value="superset" ${draft.type === 'superset' ? 'selected' : ''}>Superset (two exercises tracked separately)</option>
         </select>
       </label>
+
+      ${draft.type === 'superset' ? renderSubExerciseFields(draft) : ''}
 
       <label class="field">
         <span>Sets × Reps / Tempo (full description)</span>
@@ -1701,17 +1786,17 @@ function renderSession() {
 
       <div class="exercise-list">
         ${day.exercises.map((ex, idx) => {
-          const sets = session.entries?.[ex.id]?.sets || [];
-          const isDone = sets.length > 0;
-          const last = getLastEntryForExercise(otherSessions, ex.id);
+          const entry = session.entries?.[ex.id];
+          const isDone = !!(entry && (entry.sets?.length > 0 || entry.subSets));
+          const last = getLastEntryForExercise(otherSessions, ex.id, day.id);
           return `
             <button class="exercise-card ${isDone ? 'done' : ''}" data-action="open-exercise" data-ex-id="${ex.id}">
               <div class="ex-num">${String(idx + 1).padStart(2, '0')}</div>
               <div class="ex-body">
                 <div class="ex-name">${escapeHtml(ex.name)}</div>
                 <div class="ex-scheme">${escapeHtml(truncate(ex.scheme, 60))}</div>
-                ${last ? `<div class="ex-last">last: ${escapeHtml(summarizeSets(last.entry.sets, ex.type))} · ${daysAgo(last.date)}</div>` : ''}
-                ${isDone ? `<div class="ex-current">today: ${escapeHtml(summarizeSets(sets, ex.type))}</div>` : ''}
+                ${last ? `<div class="ex-last">last: ${escapeHtml(summarizeSets(last.entry, ex.type, ex))} · ${daysAgo(last.date)}</div>` : ''}
+                ${isDone ? `<div class="ex-current">today: ${escapeHtml(summarizeSets(entry, ex.type, ex))}</div>` : ''}
               </div>
               <div class="ex-icon">${isDone ? I.check() : I.chevR(20)}</div>
             </button>
@@ -1737,14 +1822,19 @@ function renderExerciseLog() {
   if (!ex) { navigate('home'); return ''; }
 
   const otherSessions = data.sessions.filter(s => s.id !== session.id);
-  const last = getLastEntryForExercise(otherSessions, exId);
+  const last = getLastEntryForExercise(otherSessions, exId, day.id);
+
+  if (isSuperset(ex)) {
+    return renderSupersetLog(session, day, ex, last);
+  }
+
   const existingSets = session.entries?.[exId]?.sets || [];
 
   // Initialize working sets state (held in route.params for cross-render persistence)
   if (!route.params.workingSets) {
     if (existingSets.length > 0) {
       route.params.workingSets = existingSets.map(s => ({ ...s }));
-    } else if (last) {
+    } else if (last && last.entry.sets) {
       route.params.workingSets = last.entry.sets.map(s => ({ ...s }));
     } else {
       const setCount = parseSetCount(ex.scheme);
@@ -1767,9 +1857,9 @@ function renderExerciseLog() {
       ${renderInfoSection(exId, 'progression', 'Progression (8 wks)', ex.progression, I.arrow())}
       ${renderInfoSection(exId, 'rotation', 'Week 8+ rotation', ex.rotation, I.rotate())}
 
-      ${last ? `
+      ${last && last.entry.sets ? `
         <div class="last-time-card">
-          <div class="last-time-label">Last time · ${fmtDate(last.date)} · ${daysAgo(last.date)}</div>
+          <div class="last-time-label">Last ${escapeHtml(day.name)} · ${fmtDate(last.date)} · ${daysAgo(last.date)}</div>
           <div class="last-time-sets">
             ${last.entry.sets.map((s, i) => `
               <div class="last-set"><span class="last-set-num">${i + 1}</span><span>${escapeHtml(formatSetDisplay(s, ex.type))}</span></div>
@@ -1781,7 +1871,7 @@ function renderExerciseLog() {
       <h3 class="section-h" style="margin-top: 18px;">Today\u2019s sets</h3>
 
       <div class="sets-list">
-        ${sets.map((set, idx) => renderSetRow(idx, set, ex.type, last?.entry.sets[idx], sets.length)).join('')}
+        ${sets.map((set, idx) => renderSetRow(idx, set, ex.type, last?.entry.sets?.[idx], sets.length)).join('')}
       </div>
 
       <button class="add-set-btn" data-action="add-set">${I.plus()}<span>Add set</span></button>
@@ -1789,6 +1879,85 @@ function renderExerciseLog() {
       <div class="action-row">
         <button class="secondary-btn" data-action="goto-progress" data-ex-id="${ex.id}">${I.trend()}<span>Progress</span></button>
         <button class="primary-btn" data-action="save-sets" data-ex-id="${ex.id}">${I.save()}<span>Save</span></button>
+      </div>
+    </div>
+  `;
+}
+
+function renderSupersetLog(session, day, ex, last) {
+  const exId = ex.id;
+  const existingEntry = session.entries?.[exId];
+
+  // Initialize workingSubSets: { 0: [...], 1: [...] }
+  if (!route.params.workingSubSets) {
+    const initial = {};
+    ex.subExercises.forEach((sub, idx) => {
+      if (existingEntry && existingEntry.subSets && existingEntry.subSets[idx]) {
+        initial[idx] = existingEntry.subSets[idx].map(s => ({ ...s }));
+      } else if (existingEntry && existingEntry.sets && idx === 0) {
+        // Migration: old single-exercise data goes into sub 0
+        initial[idx] = existingEntry.sets.map(s => ({ ...s }));
+      } else if (last && last.entry.subSets && last.entry.subSets[idx]) {
+        initial[idx] = last.entry.subSets[idx].map(s => ({ ...s }));
+      } else if (last && last.entry.sets && idx === 0) {
+        // Migration: old last-entry data for sub 0
+        initial[idx] = last.entry.sets.map(s => ({ ...s }));
+      } else {
+        const setCount = parseSetCount(ex.scheme);
+        initial[idx] = Array.from({ length: setCount }, () => emptySet(sub.type || 'weight'));
+      }
+    });
+    route.params.workingSubSets = initial;
+  }
+  const subSets = route.params.workingSubSets;
+
+  return `
+    <div class="view">
+      ${topbar(escapeHtml(ex.name), escapeHtml(day.name))}
+
+      <div class="ex-header-card">
+        <div class="ex-header-scheme">${escapeHtml(ex.scheme)}</div>
+        <span class="ex-header-rest">${I.clock()}<span>${escapeHtml(ex.rest || '—')} rest</span></span>
+      </div>
+
+      ${renderInfoSection(exId, 'target', 'Target muscles', ex.target, I.target())}
+      ${renderInfoSection(exId, 'goal', 'Goal alignment', ex.goal, I.flag())}
+      ${renderInfoSection(exId, 'progression', 'Progression (8 wks)', ex.progression, I.arrow())}
+      ${renderInfoSection(exId, 'rotation', 'Week 8+ rotation', ex.rotation, I.rotate())}
+
+      ${last ? `
+        <div class="last-time-card">
+          <div class="last-time-label">Last ${escapeHtml(day.name)} · ${fmtDate(last.date)} · ${daysAgo(last.date)}</div>
+          ${ex.subExercises.map((sub, idx) => {
+            const ls = last.entry.subSets?.[idx] || (idx === 0 ? last.entry.sets : null);
+            if (!ls || ls.length === 0) return '';
+            return `
+              <div style="margin-top: 8px;">
+                <div style="font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">${escapeHtml(sub.name)}</div>
+                <div class="last-time-sets">
+                  ${ls.map((s, i) => `<div class="last-set"><span class="last-set-num">${i + 1}</span><span>${escapeHtml(formatSetDisplay(s, sub.type || 'weight'))}</span></div>`).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      ` : ''}
+
+      ${ex.subExercises.map((sub, subIdx) => {
+        const sets = subSets[subIdx] || [];
+        const lastSubSets = last ? (last.entry.subSets?.[subIdx] || (subIdx === 0 ? last.entry.sets : null)) : null;
+        return `
+          <h3 class="section-h" style="margin-top: 18px;">${escapeHtml(sub.name)}</h3>
+          <div class="sets-list">
+            ${sets.map((set, idx) => renderSetRow(idx, set, sub.type || 'weight', lastSubSets?.[idx], sets.length, subIdx)).join('')}
+          </div>
+          <button class="add-set-btn" data-action="add-sub-set" data-sub-idx="${subIdx}">${I.plus()}<span>Add set to ${escapeHtml(sub.name)}</span></button>
+        `;
+      }).join('')}
+
+      <div class="action-row" style="margin-top: 16px;">
+        <button class="secondary-btn" data-action="goto-progress" data-ex-id="${ex.id}">${I.trend()}<span>Progress</span></button>
+        <button class="primary-btn" data-action="save-superset" data-ex-id="${ex.id}">${I.save()}<span>Save</span></button>
       </div>
     </div>
   `;
@@ -1810,37 +1979,40 @@ function renderInfoSection(exId, key, label, content, icon) {
   `;
 }
 
-function renderSetRow(idx, set, type, lastSet, totalSets) {
+function renderSetRow(idx, set, type, lastSet, totalSets, subIdx) {
   const canRemove = totalSets > 1;
+  const removeAction = subIdx != null ? 'remove-sub-set' : 'remove-set';
   let inputsHtml = '';
   if (type === 'weight') {
     inputsHtml = `
-      ${inputCell('weight', set.weight, lastSet?.weight, 'lbs', idx)}
-      ${inputCell('reps', set.reps, lastSet?.reps, 'reps', idx)}
+      ${inputCell('weight', set.weight, lastSet?.weight, 'lbs', idx, false, subIdx)}
+      ${inputCell('reps', set.reps, lastSet?.reps, 'reps', idx, false, subIdx)}
     `;
   } else if (type === 'isometric') {
-    inputsHtml = inputCell('duration', set.duration, lastSet?.duration, 'sec', idx, true);
+    inputsHtml = inputCell('duration', set.duration, lastSet?.duration, 'sec', idx, true, subIdx);
   } else if (type === 'isometric_weighted') {
     inputsHtml = `
-      ${inputCell('duration', set.duration, lastSet?.duration, 'sec', idx)}
-      ${inputCell('weight', set.weight, lastSet?.weight, 'lbs', idx)}
+      ${inputCell('duration', set.duration, lastSet?.duration, 'sec', idx, false, subIdx)}
+      ${inputCell('weight', set.weight, lastSet?.weight, 'lbs', idx, false, subIdx)}
     `;
   } else if (type === 'cardio') {
-    inputsHtml = inputCell('duration', set.duration, lastSet?.duration, 'min', idx, true);
+    inputsHtml = inputCell('duration', set.duration, lastSet?.duration, 'min', idx, true, subIdx);
   }
+  const subAttr = subIdx != null ? ` data-sub-idx="${subIdx}"` : '';
   return `
     <div class="set-row">
       <div class="set-num">${idx + 1}</div>
       <div class="set-inputs">${inputsHtml}</div>
-      <button class="remove-set" data-action="remove-set" data-idx="${idx}" ${!canRemove ? 'disabled' : ''}>${I.minus()}</button>
+      <button class="remove-set" data-action="${removeAction}" data-idx="${idx}"${subAttr} ${!canRemove ? 'disabled' : ''}>${I.minus()}</button>
     </div>
   `;
 }
 
-function inputCell(field, value, last, label, idx, wide) {
+function inputCell(field, value, last, label, idx, wide, subIdx) {
+  const subAttr = subIdx != null ? ` data-sub-idx="${subIdx}"` : '';
   return `
     <div class="input-cell ${wide ? 'wide' : ''}">
-      <input type="number" inputmode="decimal" step="any" data-set-input data-idx="${idx}" data-field="${field}" value="${value ?? ''}" placeholder="${last != null ? last : '—'}">
+      <input type="number" inputmode="decimal" step="any" data-set-input data-idx="${idx}"${subAttr} data-field="${field}" value="${value ?? ''}" placeholder="${last != null ? last : '—'}">
       <span class="input-label">${label}</span>
     </div>
   `;
@@ -1853,6 +2025,19 @@ function emptySet(type) {
   return { weight: '', reps: '' };
 }
 
+function isSuperset(ex) {
+  return ex && ex.type === 'superset' && Array.isArray(ex.subExercises) && ex.subExercises.length >= 2;
+}
+
+function getEntrySetCount(entry) {
+  if (!entry) return 0;
+  if (entry.sets) return entry.sets.length;
+  if (entry.subSets) {
+    return Math.max(...Object.values(entry.subSets).map(s => s.length));
+  }
+  return 0;
+}
+
 function parseSetCount(scheme) {
   const m = scheme.match(/^\s*(\d+)\s*[×x]/);
   return m ? parseInt(m[1]) : 3;
@@ -1862,61 +2047,120 @@ function parseSetCount(scheme) {
 // PROGRESS VIEW
 // ============================================================
 function renderProgress() {
-  const activeBlock = getActiveBlock(data);
-  if (!activeBlock) {
-    return `<div class="view">${topbar('Progress', '')}<div class="empty-state">${I.dumbbell()}<p>No active block</p></div></div>`;
+  // Look across ALL blocks so progress works for exercises from other blocks too
+  const allExercises = data.blocks.flatMap(b =>
+    b.days.flatMap(d => d.exercises.map(e => ({ ...e, dayName: d.name, blockName: b.name })))
+  );
+  if (allExercises.length === 0) {
+    return `<div class="view">${topbar('Progress', '')}<div class="empty-state">${I.dumbbell()}<p>No exercises yet</p></div></div>`;
   }
-  const allExercises = activeBlock.days.flatMap(d => d.exercises.map(e => ({ ...e, dayName: d.name })));
   const currentExId = route.params.exId || allExercises[0]?.id;
   const ex = allExercises.find(e => e.id === currentExId) || allExercises[0];
   if (!ex) {
-    return `<div class="view">${topbar('Progress', '')}<div class="empty-state"><p>No exercises in active block</p></div></div>`;
+    return `<div class="view">${topbar('Progress', '')}<div class="empty-state"><p>No exercises found</p></div></div>`;
   }
 
-  // Collect data points across ALL sessions (cross-block) that reference this exercise id
-  const points = data.sessions
-    .filter(s => s.completed && s.entries?.[ex.id]?.sets?.length > 0)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .map(s => {
-      const sets = s.entries[ex.id].sets;
-      const date = s.date;
-      const dateLabel = fmtDateShort(s.date);
-      if (ex.type === 'weight') {
-        return { date, dateLabel, weight: Math.max(...sets.map(x => x.weight || 0)), volume: sets.reduce((sum, x) => sum + (x.weight || 0) * (x.reps || 0), 0) };
-      }
-      return { date, dateLabel, duration: Math.max(...sets.map(x => x.duration || 0)), weight: Math.max(...sets.map(x => x.weight || 0)) };
-    });
-
-  let statsHtml = '';
   let chartsHtml = '';
-  if (points.length === 0) {
-    chartsHtml = `<div class="empty-state">${I.dumbbell()}<p>No data yet for this exercise.</p><p class="muted">Complete a session to see your progression here.</p></div>`;
+  let statsHtml = '';
+
+  if (isSuperset(ex)) {
+    // Render two separate chart sections, one per sub-exercise
+    chartsHtml = ex.subExercises.map((sub, subIdx) => {
+      const subPoints = data.sessions
+        .filter(s => s.completed && s.entries?.[ex.id])
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .map(s => {
+          const entry = s.entries[ex.id];
+          // Look in subSets first, fall back to legacy `sets` for sub 0 only
+          let sets = entry.subSets?.[subIdx];
+          if (!sets && subIdx === 0 && entry.sets) sets = entry.sets;
+          if (!sets || sets.length === 0) return null;
+          const dateLabel = fmtDateShort(s.date);
+          const subType = sub.type || 'weight';
+          if (subType === 'weight') {
+            return { date: s.date, dateLabel, weight: Math.max(...sets.map(x => x.weight || 0)), volume: sets.reduce((sum, x) => sum + (x.weight || 0) * (x.reps || 0), 0) };
+          }
+          return { date: s.date, dateLabel, duration: Math.max(...sets.map(x => x.duration || 0)), weight: Math.max(...sets.map(x => x.weight || 0)) };
+        })
+        .filter(Boolean);
+
+      const subType = sub.type || 'weight';
+      const color = subIdx === 0 ? '#d4a574' : '#7ca85a';
+      const subHeader = `<h3 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; margin: 20px 0 10px; color: ${color};">${escapeHtml(sub.name)}</h3>`;
+
+      if (subPoints.length === 0) {
+        return `${subHeader}<div class="empty-state" style="padding: 20px;"><p class="muted">No data yet</p></div>`;
+      }
+
+      let subStats, subCharts;
+      if (subType === 'weight') {
+        const first = subPoints[0].weight, last = subPoints[subPoints.length - 1].weight;
+        const peak = Math.max(...subPoints.map(p => p.weight));
+        const change = last - first;
+        subStats = statsGrid([
+          ['Sessions', subPoints.length],
+          ['Peak', `${peak} lb`],
+          ['Latest', `${last} lb`],
+          ['Change', `${change >= 0 ? '+' : ''}${change} lb`, change > 0],
+        ]);
+        subCharts = `${renderLineChart('Top set weight', subPoints, 'weight', 'lb', color)}${renderLineChart('Total volume', subPoints, 'volume', '', color)}`;
+      } else {
+        const first = subPoints[0].duration, last = subPoints[subPoints.length - 1].duration;
+        const peak = Math.max(...subPoints.map(p => p.duration));
+        const change = last - first;
+        subStats = statsGrid([
+          ['Sessions', subPoints.length],
+          ['Peak', `${peak}s`],
+          ['Latest', `${last}s`],
+          ['Change', `${change >= 0 ? '+' : ''}${change}s`, change > 0],
+        ]);
+        subCharts = renderLineChart('Hold duration', subPoints, 'duration', 's', color);
+      }
+      return `${subHeader}${subStats}${subCharts}`;
+    }).join('');
   } else {
-    if (ex.type === 'weight') {
-      const first = points[0].weight, last = points[points.length - 1].weight;
-      const peak = Math.max(...points.map(p => p.weight));
-      const change = last - first;
-      statsHtml = statsGrid([
-        ['Sessions', points.length],
-        ['Peak', `${peak} lb`],
-        ['Latest', `${last} lb`],
-        ['Change', `${change >= 0 ? '+' : ''}${change} lb`, change > 0],
-      ]);
-      chartsHtml = `
-        ${renderLineChart('Top set weight', points, 'weight', 'lb', '#d4a574')}
-        ${renderLineChart('Total volume (weight × reps)', points, 'volume', '', '#7ca85a')}
-      `;
+    // Single-exercise path
+    const points = data.sessions
+      .filter(s => s.completed && s.entries?.[ex.id]?.sets?.length > 0)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .map(s => {
+        const sets = s.entries[ex.id].sets;
+        const dateLabel = fmtDateShort(s.date);
+        if (ex.type === 'weight') {
+          return { date: s.date, dateLabel, weight: Math.max(...sets.map(x => x.weight || 0)), volume: sets.reduce((sum, x) => sum + (x.weight || 0) * (x.reps || 0), 0) };
+        }
+        return { date: s.date, dateLabel, duration: Math.max(...sets.map(x => x.duration || 0)), weight: Math.max(...sets.map(x => x.weight || 0)) };
+      });
+
+    if (points.length === 0) {
+      chartsHtml = `<div class="empty-state">${I.dumbbell()}<p>No data yet for this exercise.</p><p class="muted">Complete a session to see your progression here.</p></div>`;
     } else {
-      const first = points[0].duration, last = points[points.length - 1].duration;
-      const peak = Math.max(...points.map(p => p.duration));
-      const change = last - first;
-      statsHtml = statsGrid([
-        ['Sessions', points.length],
-        ['Peak', `${peak}s`],
-        ['Latest', `${last}s`],
-        ['Change', `${change >= 0 ? '+' : ''}${change}s`, change > 0],
-      ]);
-      chartsHtml = renderLineChart('Hold duration', points, 'duration', 's', '#d4a574');
+      if (ex.type === 'weight') {
+        const first = points[0].weight, last = points[points.length - 1].weight;
+        const peak = Math.max(...points.map(p => p.weight));
+        const change = last - first;
+        statsHtml = statsGrid([
+          ['Sessions', points.length],
+          ['Peak', `${peak} lb`],
+          ['Latest', `${last} lb`],
+          ['Change', `${change >= 0 ? '+' : ''}${change} lb`, change > 0],
+        ]);
+        chartsHtml = `
+          ${renderLineChart('Top set weight', points, 'weight', 'lb', '#d4a574')}
+          ${renderLineChart('Total volume (weight × reps)', points, 'volume', '', '#7ca85a')}
+        `;
+      } else {
+        const first = points[0].duration, last = points[points.length - 1].duration;
+        const peak = Math.max(...points.map(p => p.duration));
+        const change = last - first;
+        statsHtml = statsGrid([
+          ['Sessions', points.length],
+          ['Peak', `${peak}s`],
+          ['Latest', `${last}s`],
+          ['Change', `${change >= 0 ? '+' : ''}${change}s`, change > 0],
+        ]);
+        chartsHtml = renderLineChart('Hold duration', points, 'duration', 's', '#d4a574');
+      }
     }
   }
 
@@ -2047,7 +2291,7 @@ function renderHistory() {
                       if (!ex) return '';
                       return `<button class="history-entry-row" data-action="goto-progress" data-ex-id="${exId}">
                         <span class="he-name">${escapeHtml(ex.name)}</span>
-                        <span class="he-summary">${escapeHtml(summarizeSets(entry.sets, ex.type))}</span>
+                        <span class="he-summary">${escapeHtml(summarizeSets(entry, ex.type, ex))}</span>
                       </button>`;
                     }).join('')}
                   </div>
@@ -2324,7 +2568,12 @@ function attachHandlers() {
     el.addEventListener('input', e => {
       const idx = parseInt(el.dataset.idx);
       const field = el.dataset.field;
-      if (route.params.workingSets) {
+      const subIdx = el.dataset.subIdx != null ? parseInt(el.dataset.subIdx) : null;
+      if (subIdx != null && route.params.workingSubSets) {
+        if (!route.params.workingSubSets[subIdx]) route.params.workingSubSets[subIdx] = [];
+        if (!route.params.workingSubSets[subIdx][idx]) route.params.workingSubSets[subIdx][idx] = {};
+        route.params.workingSubSets[subIdx][idx][field] = el.value;
+      } else if (route.params.workingSets) {
         route.params.workingSets[idx][field] = el.value;
       }
     });
@@ -2342,8 +2591,25 @@ function attachHandlers() {
       const field = el.dataset.bind;
       if (route.params.draft && route.view === 'exercise-edit') {
         route.params.draft[field] = el.value;
+        // Re-render if type changed to show/hide sub-exercise fields
+        if (field === 'type') render();
       }
     });
+  });
+  // Sub-exercise form bindings
+  document.querySelectorAll('[data-bind-sub]').forEach(el => {
+    if (el.closest('.modal-overlay')) return;
+    const handler = e => {
+      const subIdx = parseInt(el.dataset.bindSub);
+      const field = el.dataset.subField;
+      if (route.params.draft && route.view === 'exercise-edit') {
+        if (!route.params.draft.subExercises) route.params.draft.subExercises = [];
+        if (!route.params.draft.subExercises[subIdx]) route.params.draft.subExercises[subIdx] = { name: '', type: 'weight' };
+        route.params.draft.subExercises[subIdx][field] = el.value;
+      }
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
   });
   // Info section collapse persistence
   document.querySelectorAll('.info-section[data-collapse-key]').forEach(el => {
@@ -2381,10 +2647,13 @@ function handleAction(action, el, e) {
     case 'cancel-edit': handleBack(); break;
     case 'save-exercise': handleSaveExercise(el.dataset.blockId, el.dataset.dayId, el.dataset.isNew === '1'); break;
     case 'start-session': handleStartSession(el.dataset.dayId); break;
-    case 'open-exercise': navigate('exercise', { sessionId: route.params.sessionId, exId: el.dataset.exId, workingSets: null }); break;
+    case 'open-exercise': navigate('exercise', { sessionId: route.params.sessionId, exId: el.dataset.exId, workingSets: null, workingSubSets: null }); break;
     case 'add-set': handleAddSet(); break;
     case 'remove-set': handleRemoveSet(parseInt(el.dataset.idx)); break;
     case 'save-sets': handleSaveSets(el.dataset.exId); break;
+    case 'add-sub-set': handleAddSubSet(parseInt(el.dataset.subIdx)); break;
+    case 'remove-sub-set': handleRemoveSubSet(parseInt(el.dataset.subIdx), parseInt(el.dataset.idx)); break;
+    case 'save-superset': handleSaveSuperset(el.dataset.exId); break;
     case 'finish-session': handleFinishSession(); break;
     case 'delete-session': handleDeleteSession(el.dataset.sessionId); break;
     case 'open-progress-picker': handleOpenProgressPicker(); break;
@@ -2640,6 +2909,58 @@ function handleSaveSets(exId) {
     });
   if (!session.entries) session.entries = {};
   session.entries[exId] = { sets: clean };
+  persist();
+  showToast('Saved ✓');
+  navigate('session', { sessionId });
+}
+
+function handleAddSubSet(subIdx) {
+  if (!route.params.workingSubSets) return;
+  const { sessionId, exId } = route.params;
+  const session = data.sessions.find(s => s.id === sessionId);
+  const block = data.blocks.find(b => b.id === session.blockId);
+  const day = block?.days.find(d => d.id === session.dayId);
+  const ex = day?.exercises.find(e => e.id === exId);
+  if (!ex || !isSuperset(ex)) return;
+  if (!route.params.workingSubSets[subIdx]) route.params.workingSubSets[subIdx] = [];
+  route.params.workingSubSets[subIdx].push(emptySet(ex.subExercises[subIdx].type || 'weight'));
+  render();
+}
+
+function handleRemoveSubSet(subIdx, idx) {
+  if (!route.params.workingSubSets) return;
+  const arr = route.params.workingSubSets[subIdx];
+  if (!arr || arr.length <= 1) return;
+  arr.splice(idx, 1);
+  render();
+}
+
+function handleSaveSuperset(exId) {
+  const { sessionId } = route.params;
+  const session = data.sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  const raw = route.params.workingSubSets || {};
+  const cleanSubSets = {};
+  for (const [subIdx, sets] of Object.entries(raw)) {
+    const clean = sets
+      .filter(s => Object.values(s).some(v => v !== '' && v !== null && v !== undefined))
+      .map(s => {
+        const out = {};
+        for (const [k, v] of Object.entries(s)) {
+          if (v === '' || v === null || v === undefined) {
+            out[k] = null;
+          } else {
+            const n = parseFloat(v);
+            out[k] = isNaN(n) ? v : n;
+          }
+        }
+        return out;
+      });
+    cleanSubSets[subIdx] = clean;
+  }
+  if (!session.entries) session.entries = {};
+  // Save as superset entry (subSets), drop any legacy `sets` field
+  session.entries[exId] = { subSets: cleanSubSets };
   persist();
   showToast('Saved ✓');
   navigate('session', { sessionId });
