@@ -106,6 +106,35 @@ html, body {
 .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 /* BLOCK SELECTOR */
+.waist-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.12), rgba(212, 165, 116, 0.04));
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  color: var(--accent);
+  border-radius: 10px;
+  padding: 11px 14px;
+  margin-bottom: 14px;
+  font-family: inherit;
+  text-align: left;
+}
+.waist-banner-icon, .waist-banner-text { cursor: pointer; }
+.waist-banner-icon { display: flex; align-items: center; flex-shrink: 0; }
+.waist-banner-text { flex: 1; font-size: 13px; font-weight: 500; }
+.waist-banner-dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  padding: 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.waist-banner-dismiss:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
 .block-selector {
   display: flex;
   align-items: center;
@@ -714,6 +743,38 @@ html, body {
   resize: vertical;
 }
 .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
+
+.checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+.checkbox-field input[type="checkbox"] {
+  margin: 2px 0 0 0;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.checkbox-field > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text);
+}
+.checkbox-field .checkbox-hint {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
 .modal-actions { display: flex; gap: 8px; margin-top: 10px; }
 .modal-actions .primary-btn, .modal-actions .secondary-btn { flex: 1; }
 
@@ -1066,6 +1127,189 @@ html, body {
   line-height: 1.5;
 }
 
+/* BODY METRICS */
+.body-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.body-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.body-card-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+}
+.body-cadence-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--accent);
+  background: rgba(212, 165, 116, 0.1);
+  padding: 3px 7px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid rgba(212, 165, 116, 0.2);
+}
+.body-info-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.body-info-btn:hover { color: var(--accent); }
+.body-card-current {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+  margin: 6px 0 2px;
+}
+.body-card-current .unit {
+  font-size: 14px;
+  color: var(--text-2);
+  font-weight: 500;
+  margin-left: 4px;
+}
+.body-card-meta {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 12px;
+}
+.body-card-meta.due {
+  color: var(--accent);
+}
+.body-card-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.body-card-input input {
+  flex: 1;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.body-card-input input:focus { border-color: var(--accent); }
+.body-card-input input::-webkit-outer-spin-button,
+.body-card-input input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.body-card-input button {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.body-card-input button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.body-instruction-list {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+  padding-left: 18px;
+  margin: 8px 0;
+}
+.body-instruction-list li { margin-bottom: 4px; }
+
+.body-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+.body-log-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--bg-3);
+  border-radius: 6px;
+  font-size: 12.5px;
+}
+.body-log-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.body-log-value {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+}
+.body-log-row .delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+.body-log-row .delete-btn:hover { color: var(--red); }
+
+.composite-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11.5px;
+  margin: 0 4px 6px;
+}
+.composite-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-2);
+}
+.composite-legend-dot {
+  width: 10px;
+  height: 2.5px;
+  border-radius: 2px;
+}
+.composite-key {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 11.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.composite-key-row { display: flex; gap: 8px; margin-bottom: 4px; }
+.composite-key-row:last-child { margin-bottom: 0; }
+.composite-key-dot {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+  font-size: 13px;
+}
+
 /* TOAST */
 .toast {
   position: fixed;
@@ -1124,6 +1368,10 @@ function loadData() {
     // Ensure phases exist (migration safety)
     if (!parsed.phases) { parsed.phases = DEFAULT_PHASES; migrationRan = true; }
     if (!parsed.collapsedSections) { parsed.collapsedSections = {}; migrationRan = true; }
+    // Body metrics migration — add empty arrays if missing
+    if (!parsed.bodyweightLog) { parsed.bodyweightLog = []; migrationRan = true; }
+    if (!parsed.waistLog) { parsed.waistLog = []; migrationRan = true; }
+    if (parsed.waistBannerDismissedDate === undefined) { parsed.waistBannerDismissedDate = null; migrationRan = true; }
     // One-shot migration: upgrade tricep+curl superset to new type
     if (!parsed.migrations) parsed.migrations = {};
     if (!parsed.migrations.supersetUpgrade) {
@@ -1152,6 +1400,25 @@ function loadData() {
       parsed.migrations.supersetUpgrade = true;
       migrationRan = true;
     }
+    // Migration: auto-tag preset compound lifts for composite chart
+    if (!parsed.migrations.compositeTagging) {
+      const compositeNames = ['trap bar deadlift', 'romanian deadlift', 'hip thrust'];
+      for (const block of parsed.blocks || []) {
+        for (const day of block.days || []) {
+          for (const ex of day.exercises || []) {
+            if (ex.compositeChart === undefined) {
+              const n = (ex.name || '').toLowerCase();
+              if (compositeNames.some(name => n.includes(name))) {
+                ex.compositeChart = true;
+                migrationRan = true;
+              }
+            }
+          }
+        }
+      }
+      parsed.migrations.compositeTagging = true;
+      migrationRan = true;
+    }
     // Persist immediately if any migration changed data
     if (migrationRan) {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed)); } catch (e) { /* ignore */ }
@@ -1172,6 +1439,9 @@ function defaultData() {
     sessions: [],        // array of completed/draft sessions
     phases: DEFAULT_PHASES,
     collapsedSections: {}, // { 'exId-target': true, ... } — per-exercise collapse state
+    bodyweightLog: [],   // array of { id, date, value } — weekly bodyweight entries (lbs)
+    waistLog: [],        // array of { id, date, value } — biweekly waist entries (inches)
+    waistBannerDismissedDate: null, // ISO date string — banner dismissed for this week
   };
 }
 
@@ -1198,7 +1468,7 @@ function makePresetBlock1() {
         id: uid('d'), name: 'Day 1', subtitle: 'Hip hinge, vertical pull, knee conditioning',
         exercises: [
           { id: uid('e'), name: 'Spanish Squat Isometric', scheme: '4 × 45 sec isometric hold — max 30 sec rest between sets. Focus on 90° knee angle.', rest: '30 sec', target: 'Patellar tendon (loading), VMO, quads, glutes', goal: 'HSR isometric analgesic for patellar tendonitis — reduces pain for 45–60 min post-hold, priming the knee for heavier work.', progression: 'Wk 1–2: 30 sec. Wk 3–4: 45 sec. Wk 5–6: 60 sec. Wk 7–8: add light band or weighted vest 5–10 lbs.', rotation: 'Single-Leg Wall Sit — increases unilateral loading on each tendon independently.', type: 'isometric' },
-          { id: uid('e'), name: 'Romanian Deadlift', scheme: '4 × 8. 3 sec eccentric, 1 sec pause at stretch, 2 sec concentric. 90 sec rest.', rest: '90 sec', target: 'Primary: hamstrings, glutes. Secondary: spinal erectors, lats (during brace).', goal: 'Core posterior chain movement. Counteracts glute shutdown from prolonged driving. Builds hip hinge pattern for production floor endurance.', progression: 'Establish form weight. Add 5 lbs every 2 weeks when you hit all 4×8 with perfect tempo. Prioritize depth over load.', rotation: 'Single-Leg RDL (dumbbell) — unilateral, exposes imbalances.', type: 'weight' },
+          { id: uid('e'), name: 'Romanian Deadlift', scheme: '4 × 8. 3 sec eccentric, 1 sec pause at stretch, 2 sec concentric. 90 sec rest.', rest: '90 sec', target: 'Primary: hamstrings, glutes. Secondary: spinal erectors, lats (during brace).', goal: 'Core posterior chain movement. Counteracts glute shutdown from prolonged driving. Builds hip hinge pattern for production floor endurance.', progression: 'Establish form weight. Add 5 lbs every 2 weeks when you hit all 4×8 with perfect tempo. Prioritize depth over load.', rotation: 'Single-Leg RDL (dumbbell) — unilateral, exposes imbalances.', type: 'weight', compositeChart: true },
           { id: uid('e'), name: 'Cable Seated Row (Neutral)', scheme: '4 × 10. 2 sec pull, 1 sec squeeze, 3 sec slow return. 75 sec rest.', rest: '75 sec', target: 'Primary: mid traps, rhomboids, lats. Secondary: rear delts, biceps.', goal: 'Counteracts rounded-shoulder driving posture. More pulling than pushing is core to this plan.', progression: 'Add 5 lbs when all 4×10 hit. If weight increases faster than form, prioritize the 3-sec eccentric before adding load.', rotation: 'Chest-Supported T-Bar Row — removes lower back fatigue, greater lat/mid-trap isolation.', type: 'weight' },
           { id: uid('e'), name: 'Leg Press (Feet High & Wide)', scheme: '3 × 12. 4 sec eccentric, 1 sec pause, 2 sec press. 90 sec rest. Do NOT lock knees. Stop ~20° before full extension.', rest: '90 sec', target: 'Primary: glutes, hamstrings (high foot placement). Secondary: quads at safe ROM.', goal: 'HSR for the patellar tendon in a controlled, knee-safe environment. High foot placement shifts load from tendon to glutes.', progression: 'Wk 1–2: light, master the 4-sec eccentric. Add 10 lbs every 2 weeks. Monitor knee pain 0–10; stay below 3/10.', rotation: 'Hack Squat Machine — different angle of knee flexion, new stress on quads, still low-impact.', type: 'weight' },
           { id: uid('e'), name: 'Lat Pulldown (Wide)', scheme: '3 × 10. 2 sec pull, 1 sec hold at chest, 3 sec controlled return. 75 sec rest.', rest: '75 sec', target: 'Primary: lats. Secondary: teres major, biceps, rear delts.', goal: 'Vertical pull to pair with horizontal row — ensures full lat development. Lat strength is critical for upright posture under fatigue.', progression: 'Add 5 lbs when 3×10 achieved cleanly. Aim for full scapular depression and retraction at bottom — not a bicep curl.', rotation: 'Neutral-Grip Pulldown or Assisted Pull-Up — changes grip mechanics, more core stabilization.', type: 'weight' },
@@ -1211,7 +1481,7 @@ function makePresetBlock1() {
         id: uid('d'), name: 'Day 2', subtitle: 'Upper body pull, glutes, knee isometric loading',
         exercises: [
           { id: uid('e'), name: 'Heavy Wall Sit', scheme: '4 × 45 sec hold. Knees ~90°. Hold a weight plate (10–25 lb) on quads. 30 sec rest.', rest: '30 sec', target: 'Patellar tendon (isometric load), quads, VMO, glutes.', goal: 'Alternates with Spanish Squat to vary isometric angle. Weighted plate increases compressive load — key mechanism of HSR tendon adaptation.', progression: 'Wk 1–2: bodyweight. Wk 3–4: 10 lb plate. Wk 5–6: 25 lb plate. Wk 7–8: 35 lb plate or 60-sec holds.', rotation: 'Reverse Nordic Curl (eccentric only) — gold standard HSR exercise once baseline is established.', type: 'isometric_weighted' },
-          { id: uid('e'), name: 'Hip Thrust', scheme: '4 × 10. 2 sec lower, 2 sec isometric squeeze at top, 2 sec lower. 90 sec rest. Drive through heels.', rest: '90 sec', target: 'Primary: glutes (maximus). Secondary: hamstrings, core bracing.', goal: 'Best exercise for glute activation post-driving. Directly addresses gluteal amnesia from prolonged sitting. Zero knee shear — safe for patellar tendonitis.', progression: 'Add 10 lbs every 2 weeks. 2-sec peak contraction is non-negotiable — this is where the adaptation happens.', rotation: 'Single-Leg Hip Thrust — unilateral, reveals left/right glute imbalances.', type: 'weight' },
+          { id: uid('e'), name: 'Hip Thrust', scheme: '4 × 10. 2 sec lower, 2 sec isometric squeeze at top, 2 sec lower. 90 sec rest. Drive through heels.', rest: '90 sec', target: 'Primary: glutes (maximus). Secondary: hamstrings, core bracing.', goal: 'Best exercise for glute activation post-driving. Directly addresses gluteal amnesia from prolonged sitting. Zero knee shear — safe for patellar tendonitis.', progression: 'Add 10 lbs every 2 weeks. 2-sec peak contraction is non-negotiable — this is where the adaptation happens.', rotation: 'Single-Leg Hip Thrust — unilateral, reveals left/right glute imbalances.', type: 'weight', compositeChart: true },
           { id: uid('e'), name: 'Seated Cable Face Pull', scheme: '4 × 15 with rope. Pull to forehead, elbows flared high, 2 sec hold at peak. Light weight.', rest: '75 sec', target: 'Primary: rear delts, external rotators. Secondary: mid and lower traps.', goal: 'Counteracts forward head posture and internal rotation from driving. Critical for shoulder health under standing-shift fatigue.', progression: 'Keep weight light. Progress by adding 1 rep per set every 2 weeks, not load. Quality of external rotation is the metric.', rotation: 'Bent-Over Dumbbell Rear Delt Fly (bilateral) — removes cable, more stabilization demand.', type: 'weight' },
           { id: uid('e'), name: 'Seated Leg Curl', scheme: '4 × 10. 3 sec lower, 1 sec at peak flex, 3 sec eccentric. 90 sec rest. Seated version keeps hip at 90° to load distal hamstring.', rest: '90 sec', target: 'Primary: biceps femoris (long head), semimembranosus. Secondary: gastrocnemius.', goal: 'Isolated hamstring work is critical for knee stability — strong hamstrings act as functional support for the patellar tendon. HSR tempo applies.', progression: 'Add 5 lbs every 2 weeks. Never sacrifice the 3-sec eccentric for heavier weight — eccentric is where tendon remodeling occurs.', rotation: 'Lying Leg Curl — changes hip angle, hits hamstring from lengthened position.', type: 'weight' },
           { id: uid('e'), name: 'Dumbbell Overhead Press', scheme: '3 × 10 standing or seated. 2 sec press, 1 sec at top, 3 sec lower. 75 sec rest. Brace core throughout.', rest: '75 sec', target: 'Primary: medial and anterior delts. Secondary: upper traps, triceps, core stability.', goal: 'Standing OHP simultaneously challenges core and spinal erector bracing — directly trains postural endurance needed for prolonged standing shifts.', progression: 'Add 2.5 lbs per dumbbell every 2 weeks. If standing causes lower back fatigue, drop to seated.', rotation: 'Arnold Press — adds internal/external rotation, recruits more delt fibers.', type: 'weight' },
@@ -1223,7 +1493,7 @@ function makePresetBlock1() {
         id: uid('d'), name: 'Day 3', subtitle: 'Spinal erectors, traps, slow eccentrics',
         exercises: [
           { id: uid('e'), name: 'Sissy Squat Isometric (Bottom)', scheme: '4 × 30–40 sec isometric hold at bottom. Hold a fixed surface for balance. 30 sec rest. Not a full sissy squat — hold only.', rest: '30 sec', target: 'Patellar tendon (high-angle load), rectus femoris, VMO.', goal: 'Loads patellar tendon at a higher knee angle than Spanish Squat, targeting the mid-portion of the tendon. Rotate angle each session for full coverage.', progression: 'Wk 1–2: 20 sec hold. Increase by 5 sec every 2 weeks. Only progress when pain stays 0–2/10.', rotation: 'Decline Squat Isometric (25° decline board) — clinical standard for mid-tendon loading.', type: 'isometric' },
-          { id: uid('e'), name: 'Trap Bar Deadlift', scheme: '4 × 6 heavy reps. 3 sec lower, 1 sec pause at floor, 2 sec drive. 2 min rest. Warm-up: 5@40%, 3@60%, 1@80% of working weight.', rest: '2 min', target: 'Primary: spinal erectors, glutes, hamstrings. Secondary: traps, lats, quads.', goal: 'Heaviest movement of the week. Trap bar reduces lumbar shear vs. conventional deadlift. Builds spinal erector endurance for long production floor shifts.', progression: 'Add 5 lbs every 1–2 weeks. Given the low rep range, prioritize progressive overload here more than any other exercise.', rotation: 'Sumo Deadlift — wider stance, new adductor and glute recruitment pattern.', type: 'weight' },
+          { id: uid('e'), name: 'Trap Bar Deadlift', scheme: '4 × 6 heavy reps. 3 sec lower, 1 sec pause at floor, 2 sec drive. 2 min rest. Warm-up: 5@40%, 3@60%, 1@80% of working weight.', rest: '2 min', target: 'Primary: spinal erectors, glutes, hamstrings. Secondary: traps, lats, quads.', goal: 'Heaviest movement of the week. Trap bar reduces lumbar shear vs. conventional deadlift. Builds spinal erector endurance for long production floor shifts.', progression: 'Add 5 lbs every 1–2 weeks. Given the low rep range, prioritize progressive overload here more than any other exercise.', rotation: 'Sumo Deadlift — wider stance, new adductor and glute recruitment pattern.', type: 'weight', compositeChart: true },
           { id: uid('e'), name: 'Barbell Row (Pendlay)', scheme: '4 × 8. 1 sec explosive pull from dead stop, 1 sec squeeze, 3 sec controlled lower to floor. 90 sec rest. Torso near parallel.', rest: '90 sec', target: 'Primary: lower and mid traps, rhomboids, rear delts. Secondary: spinal erectors (isometric), biceps.', goal: 'Horizontal pulling from a hip-hinged position simultaneously trains spinal erectors isometrically — exactly the demand of leaning over a production workstation.', progression: 'Add 5 lbs every 2 weeks. Eccentric is the priority — if you cannot control the 3-sec lower, reduce weight.', rotation: 'Meadows Row (single-arm landmine) — unilateral, greater lat stretch at bottom.', type: 'weight' },
           { id: uid('e'), name: 'Goblet Squat (Slow Eccentric)', scheme: '3 × 12. 5 sec slow descent, 2 sec pause in hole, 2 sec controlled stand. Light to moderate dumbbell. 90 sec rest.', rest: '90 sec', target: 'Primary: quads, glutes. Secondary: core, hip flexors (lengthening), adductors.', goal: 'Ultra-slow eccentrics are the cornerstone of HSR for tendon remodeling. 5-sec lowering maximizes mechanical load on the patellar tendon without high-impact forces.', progression: 'Begin with very light dumbbell. Only add weight when the 5-sec eccentric is consistent across all 3 sets. Expect slow load progression.', rotation: 'Bulgarian Split Squat (rear foot elevated) — unilateral quad/glute demand, hip flexor stretch on rear leg.', type: 'weight' },
           { id: uid('e'), name: 'Cable Upright Row (Wide)', scheme: '3 × 12 with straight bar or rope at low cable. Wide grip (elbows lead above wrists). 2 sec pull, 1 sec at top, 2 sec lower. 75 sec rest.', rest: '75 sec', target: 'Primary: upper traps, medial delts. Secondary: rhomboids, rear delts.', goal: 'Upper trap development is critical for cervical spine stability during prolonged standing. Wide grip removes impingement risk of narrow-grip upright rows.', progression: 'Add 5 lbs every 2 weeks. If any shoulder impingement, switch to DB Lateral Raise immediately.', rotation: 'Dumbbell Farmer\u2019s Carry (3 × 40m walks) — trap endurance, spinal stability in a functional pattern.', type: 'weight' },
@@ -1287,6 +1557,39 @@ function getPhase(week, phases) {
   if (week <= 6) return phases[1];
   if (week <= 8) return phases[2];
   return phases[3];
+}
+
+function getLastBodyweight() {
+  const log = data.bodyweightLog || [];
+  if (log.length === 0) return null;
+  return [...log].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+}
+
+function getLastWaist() {
+  const log = data.waistLog || [];
+  if (log.length === 0) return null;
+  return [...log].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+}
+
+function daysSinceLastWaist() {
+  const last = getLastWaist();
+  if (!last) return null;
+  return Math.floor((Date.now() - new Date(last.date).getTime()) / 86400000);
+}
+
+function isWaistDue() {
+  const days = daysSinceLastWaist();
+  if (days === null) return true; // never logged
+  return days >= 14;
+}
+
+function shouldShowWaistBanner() {
+  if (!isWaistDue()) return false;
+  // Don't show again if dismissed within last 3 days
+  const dismissedISO = data.waistBannerDismissedDate;
+  if (!dismissedISO) return true;
+  const daysSinceDismiss = Math.floor((Date.now() - new Date(dismissedISO).getTime()) / 86400000);
+  return daysSinceDismiss >= 3;
 }
 
 function summarizeSets(setsOrEntry, type, ex = null) {
@@ -1359,6 +1662,10 @@ const I = {
   clock: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
   up: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`,
   down: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
+  body: (size = 18) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><path d="M9 22V12l-3-3.5M15 22V12l3-3.5M9 12h6"/></svg>`,
+  info: (size = 14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  close: (size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  scale: (size = 36) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M7 10h10M9 14h6"/></svg>`,
 };
 
 // ============================================================
@@ -1406,6 +1713,7 @@ function routeContent() {
     case 'progress': return renderProgress();
     case 'history': return renderHistory();
     case 'settings': return renderSettings();
+    case 'body': return renderBody();
     default: return renderHome();
   }
 }
@@ -1437,8 +1745,13 @@ function renderHome() {
             <p class="muted">${fmtDate(new Date().toISOString())}</p>
           </div>
         </div>
-        <button class="icon-btn" data-action="goto-settings" aria-label="Settings">${I.settings()}</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="icon-btn" data-action="goto-body" aria-label="Body metrics">${I.body()}</button>
+          <button class="icon-btn" data-action="goto-settings" aria-label="Settings">${I.settings()}</button>
+        </div>
       </header>
+
+      ${shouldShowWaistBanner() ? renderWaistBanner() : ''}
 
       <div class="block-selector" data-action="goto-blocks">
         <div>
@@ -1482,6 +1795,21 @@ function renderHome() {
       <button class="full-btn" data-action="goto-history">${I.trend(16)}<span>View history & progress</span></button>
 
       <p class="footer-note">Data is saved locally on this device. Export regularly from settings to back up.</p>
+    </div>
+  `;
+}
+
+function renderWaistBanner() {
+  const days = daysSinceLastWaist();
+  const isFirst = days === null;
+  const msg = isFirst
+    ? 'Start tracking your waist — tap for instructions'
+    : `Waist measurement due — last measured ${days} day${days === 1 ? '' : 's'} ago`;
+  return `
+    <div class="waist-banner">
+      <span class="waist-banner-icon" data-action="goto-body">${I.info(16)}</span>
+      <span class="waist-banner-text" data-action="goto-body">${escapeHtml(msg)}</span>
+      <span class="waist-banner-dismiss" data-action="dismiss-waist-banner" role="button" aria-label="Dismiss">${I.close(14)}</span>
     </div>
   `;
 }
@@ -1750,6 +2078,14 @@ function renderExerciseEdit() {
       <label class="field">
         <span>Week 8+ rotation exercise</span>
         <textarea data-bind="rotation" rows="2" placeholder="What to swap to in the next block">${escapeHtml(draft.rotation)}</textarea>
+      </label>
+
+      <label class="checkbox-field">
+        <input type="checkbox" data-bind-checkbox="compositeChart" ${draft.compositeChart ? 'checked' : ''}>
+        <span>
+          <strong>Include in strength composite chart</strong>
+          <span class="checkbox-hint">Counts the top set weight toward the body-vs-strength chart in History. Recommended for heavy compound lifts only (deadlifts, hip thrusts, squats).</span>
+        </span>
       </label>
 
       <div class="action-row">
@@ -2260,6 +2596,8 @@ function renderHistory() {
         { action: 'open-progress-picker', icon: I.trend(16), label: 'Progress' }
       ])}
 
+      ${renderCompositeChart()}
+
       ${kneeData.length >= 2 ? renderKneeChart(kneeData) : ''}
 
       <h2 class="section-h">Sessions</h2>
@@ -2306,6 +2644,139 @@ function renderHistory() {
   `;
 }
 
+function renderCompositeChart() {
+  // Gather data: bodyweight, waist, and strength index across all sessions
+  const bwSorted = [...(data.bodyweightLog || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const waistSorted = [...(data.waistLog || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // Build strength index series: for each completed session, sum top-set weights of all composite-tagged exercises
+  const tagged = new Set();
+  for (const b of data.blocks) for (const d of b.days) for (const ex of d.exercises) {
+    if (ex.compositeChart) tagged.add(ex.id);
+  }
+  const sessionStrength = [...data.sessions]
+    .filter(s => s.completed)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map(s => {
+      let total = 0;
+      let count = 0;
+      for (const exId of Object.keys(s.entries || {})) {
+        if (!tagged.has(exId)) continue;
+        const entry = s.entries[exId];
+        const sets = entry.sets || (entry.subSets ? entry.subSets[0] : null);
+        if (sets && sets.length) {
+          const top = Math.max(...sets.map(x => x.weight || 0));
+          if (top > 0) { total += top; count++; }
+        }
+      }
+      return count > 0 ? { date: s.date, value: total } : null;
+    })
+    .filter(Boolean);
+
+  // Need at least one series with 2+ data points to render
+  const haveBW = bwSorted.length >= 2;
+  const haveWaist = waistSorted.length >= 2;
+  const haveStrength = sessionStrength.length >= 2;
+
+  if (!haveBW && !haveWaist && !haveStrength) {
+    // Don't show the section if there's nothing to plot
+    return '';
+  }
+
+  // If only one series has enough data, show a helpful empty-ish state
+  const seriesCount = [haveBW, haveWaist, haveStrength].filter(Boolean).length;
+  if (seriesCount < 2) {
+    let needsMsg = [];
+    if (!haveBW) needsMsg.push('bodyweight');
+    if (!haveWaist) needsMsg.push('waist');
+    if (!haveStrength) needsMsg.push('compound-lift sessions');
+    return `
+      <h2 class="section-h">Body vs strength</h2>
+      <div class="chart-wrap" style="padding: 20px; text-align: center;">
+        <p class="muted" style="font-size: 12.5px; margin: 0;">Log at least 2 entries of each (bodyweight, waist, and compound lifts) to see the composite trend.<br>Still need ${needsMsg.length} more entries for: ${needsMsg.join(', ')}.</p>
+      </div>
+    `;
+  }
+
+  // Normalize each series to % change from its first value
+  function normalize(arr, key) {
+    if (arr.length === 0) return [];
+    const base = key ? arr[0][key] : arr[0].value;
+    return arr.map(p => ({
+      date: p.date,
+      dateLabel: fmtDateShort(p.date),
+      pct: base > 0 ? ((key ? p[key] : p.value) - base) / base * 100 : 0,
+      raw: key ? p[key] : p.value,
+    }));
+  }
+  const bwPts = haveBW ? normalize(bwSorted, 'value') : [];
+  const waistPts = haveWaist ? normalize(waistSorted, 'value') : [];
+  const strengthPts = haveStrength ? normalize(sessionStrength, 'value') : [];
+
+  // Build SVG: shared time axis (from earliest to latest date across all series)
+  const allDates = [
+    ...bwPts.map(p => new Date(p.date).getTime()),
+    ...waistPts.map(p => new Date(p.date).getTime()),
+    ...strengthPts.map(p => new Date(p.date).getTime()),
+  ];
+  const tMin = Math.min(...allDates);
+  const tMax = Math.max(...allDates);
+  const tRange = tMax - tMin || 1;
+
+  const allPcts = [...bwPts, ...waistPts, ...strengthPts].map(p => p.pct);
+  const pctMin = Math.min(0, ...allPcts);
+  const pctMax = Math.max(0, ...allPcts);
+  const pad = Math.max(2, (pctMax - pctMin) * 0.1);
+  const yMin = pctMin - pad;
+  const yMax = pctMax + pad;
+  const yRange = yMax - yMin || 1;
+
+  const W = 320, H = 200, padL = 36, padR = 8, padT = 12, padB = 24;
+  const xOf = t => padL + ((t - tMin) / tRange) * (W - padL - padR);
+  const yOf = pct => padT + (H - padT - padB) * (1 - (pct - yMin) / yRange);
+
+  function makePath(pts) {
+    if (pts.length === 0) return '';
+    return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${xOf(new Date(p.date).getTime())} ${yOf(p.pct)}`).join(' ');
+  }
+
+  // Y-axis ticks (just 3: min, 0, max)
+  const yTicks = [yMin, 0, yMax].map(v => ({ v: Math.round(v * 10) / 10, y: yOf(v) }));
+  // Zero reference line
+  const zeroY = yOf(0);
+
+  // X-axis labels (start, middle, end)
+  const xLabels = [tMin, (tMin + tMax) / 2, tMax].map(t => ({
+    x: xOf(t),
+    label: fmtDateShort(new Date(t).toISOString()),
+  }));
+
+  return `
+    <h2 class="section-h">Body vs strength</h2>
+    <div class="composite-key">
+      <div class="composite-key-row"><span class="composite-key-dot">⬆</span><span><strong style="color: var(--green);">Strength up, weight up, waist flat</strong> — muscle gain, surplus is working</span></div>
+      <div class="composite-key-row"><span class="composite-key-dot">⚠</span><span><strong style="color: var(--yellow);">Weight up, waist up, strength flat</strong> — surplus is too aggressive, mostly fat</span></div>
+      <div class="composite-key-row"><span class="composite-key-dot">⬇</span><span><strong style="color: var(--red);">Strength flat, weight flat or down</strong> — under-eating, not recovering</span></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">% change from first entry</div>
+      <div class="composite-legend">
+        ${haveBW ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #d4a574;"></span>Bodyweight</div>` : ''}
+        ${haveWaist ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #c98a6b;"></span>Waist</div>` : ''}
+        ${haveStrength ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #7ca85a;"></span>Strength</div>` : ''}
+      </div>
+      <svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="height: 200px;">
+        ${yTicks.map(t => `<line x1="${padL}" x2="${W - padR}" y1="${t.y}" y2="${t.y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/><text x="${padL - 6}" y="${t.y + 3}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="end" font-family="JetBrains Mono, monospace">${t.v >= 0 ? '+' : ''}${t.v}%</text>`).join('')}
+        <line x1="${padL}" x2="${W - padR}" y1="${zeroY}" y2="${zeroY}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        ${haveBW ? `<path d="${makePath(bwPts)}" fill="none" stroke="#d4a574" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${bwPts.map(p => `<circle cx="${xOf(new Date(p.date).getTime())}" cy="${yOf(p.pct)}" r="2.5" fill="#d4a574"/>`).join('')}` : ''}
+        ${haveWaist ? `<path d="${makePath(waistPts)}" fill="none" stroke="#c98a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${waistPts.map(p => `<circle cx="${xOf(new Date(p.date).getTime())}" cy="${yOf(p.pct)}" r="2.5" fill="#c98a6b"/>`).join('')}` : ''}
+        ${haveStrength ? `<path d="${makePath(strengthPts)}" fill="none" stroke="#7ca85a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${strengthPts.map(p => `<circle cx="${xOf(new Date(p.date).getTime())}" cy="${yOf(p.pct)}" r="2.5" fill="#7ca85a"/>`).join('')}` : ''}
+        ${xLabels.map(l => `<text x="${l.x}" y="${H - 6}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">${l.label}</text>`).join('')}
+      </svg>
+    </div>
+  `;
+}
+
 function renderKneeChart(kneeData) {
   const W = 320, H = 180, padL = 28, padR = 8, padT = 14, padB = 22;
   const xStep = kneeData.length > 1 ? (W - padL - padR) / (kneeData.length - 1) : 0;
@@ -2339,6 +2810,106 @@ function renderKneeChart(kneeData) {
         ${xy.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.5" fill="#c98a6b"/>`).join('')}
         ${xLabels}
       </svg>
+    </div>
+  `;
+}
+
+// ============================================================
+// BODY METRICS VIEW
+// ============================================================
+function renderBody() {
+  const lastBW = getLastBodyweight();
+  const lastWaist = getLastWaist();
+  const waistDays = daysSinceLastWaist();
+  const isWaistOverdue = isWaistDue();
+
+  // Sort logs newest first for display
+  const bwList = [...(data.bodyweightLog || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const waistList = [...(data.waistLog || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Sort oldest first for charts
+  const bwChartData = [...(data.bodyweightLog || [])]
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map(e => ({ date: e.date, dateLabel: fmtDateShort(e.date), weight: e.value }));
+  const waistChartData = [...(data.waistLog || [])]
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map(e => ({ date: e.date, dateLabel: fmtDateShort(e.date), waist: e.value }));
+
+  return `
+    <div class="view">
+      ${topbar('Body', 'Bodyweight and waist tracking')}
+
+      <!-- BODYWEIGHT CARD -->
+      <div class="body-card">
+        <div class="body-card-head">
+          <div class="body-card-title">Bodyweight</div>
+          <span class="body-cadence-pill">weekly</span>
+          <button class="body-info-btn" data-action="show-bodyweight-info" aria-label="How to measure">${I.info(16)}</button>
+        </div>
+        ${lastBW
+          ? `<div class="body-card-current">${lastBW.value}<span class="unit">lbs</span></div>
+             <div class="body-card-meta">Last: ${fmtDate(lastBW.date)} · ${daysAgo(lastBW.date)}</div>`
+          : `<div class="body-card-meta">No entries yet</div>`
+        }
+        <div class="body-card-input">
+          <input type="number" inputmode="decimal" step="any" id="bw-input" placeholder="${lastBW ? lastBW.value : 'lbs'}">
+          <button data-action="log-bodyweight">Log</button>
+        </div>
+      </div>
+
+      <!-- WAIST CARD -->
+      <div class="body-card">
+        <div class="body-card-head">
+          <div class="body-card-title">Waist</div>
+          <span class="body-cadence-pill">biweekly</span>
+          <button class="body-info-btn" data-action="show-waist-info" aria-label="How to measure">${I.info(16)}</button>
+        </div>
+        ${lastWaist
+          ? `<div class="body-card-current">${lastWaist.value}<span class="unit">in</span></div>
+             <div class="body-card-meta ${isWaistOverdue ? 'due' : ''}">Last: ${fmtDate(lastWaist.date)} · ${waistDays} day${waistDays === 1 ? '' : 's'} ago${isWaistOverdue ? ' · due now' : ''}</div>`
+          : `<div class="body-card-meta due">No entries yet — tap the info icon for how to measure</div>`
+        }
+        <div class="body-card-input">
+          <input type="number" inputmode="decimal" step="any" id="waist-input" placeholder="${lastWaist ? lastWaist.value : 'inches'}">
+          <button data-action="log-waist">Log</button>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      ${bwChartData.length >= 2 ? `
+        <h2 class="section-h">Bodyweight trend</h2>
+        ${renderLineChart('Weight (lbs)', bwChartData, 'weight', 'lb', '#d4a574')}
+      ` : ''}
+
+      ${waistChartData.length >= 2 ? `
+        <h2 class="section-h">Waist trend</h2>
+        ${renderLineChart('Waist (inches)', waistChartData, 'waist', 'in', '#c98a6b')}
+      ` : ''}
+
+      <!-- LOGS -->
+      ${bwList.length > 0 ? `
+        <h2 class="section-h">Bodyweight log</h2>
+        <div class="body-log-list">
+          ${bwList.map(e => `
+            <div class="body-log-row">
+              <span class="body-log-date">${fmtDate(e.date)}</span>
+              <span><span class="body-log-value">${e.value} lb</span><button class="delete-btn" data-action="delete-bw-entry" data-entry-id="${e.id}" aria-label="Delete">${I.trash(12)}</button></span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${waistList.length > 0 ? `
+        <h2 class="section-h">Waist log</h2>
+        <div class="body-log-list">
+          ${waistList.map(e => `
+            <div class="body-log-row">
+              <span class="body-log-date">${fmtDate(e.date)}</span>
+              <span><span class="body-log-value">${e.value} in</span><button class="delete-btn" data-action="delete-waist-entry" data-entry-id="${e.id}" aria-label="Delete">${I.trash(12)}</button></span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -2611,6 +3182,16 @@ function attachHandlers() {
     el.addEventListener('input', handler);
     el.addEventListener('change', handler);
   });
+  // Checkbox bindings (boolean flags on draft, like compositeChart)
+  document.querySelectorAll('[data-bind-checkbox]').forEach(el => {
+    if (el.closest('.modal-overlay')) return;
+    el.addEventListener('change', e => {
+      const field = el.dataset.bindCheckbox;
+      if (route.params.draft && route.view === 'exercise-edit') {
+        route.params.draft[field] = el.checked;
+      }
+    });
+  });
   // Info section collapse persistence
   document.querySelectorAll('.info-section[data-collapse-key]').forEach(el => {
     el.addEventListener('toggle', e => {
@@ -2662,6 +3243,14 @@ function handleAction(action, el, e) {
     case 'copy-data': handleCopy(); break;
     case 'import-data': handleImport(); break;
     case 'reset-all': handleResetAll(); break;
+    case 'goto-body': navigate('body'); break;
+    case 'dismiss-waist-banner': handleDismissWaistBanner(e); break;
+    case 'show-bodyweight-info': handleShowBodyweightInfo(); break;
+    case 'show-waist-info': handleShowWaistInfo(); break;
+    case 'log-bodyweight': handleLogBodyweight(); break;
+    case 'log-waist': handleLogWaist(); break;
+    case 'delete-bw-entry': handleDeleteBwEntry(el.dataset.entryId); break;
+    case 'delete-waist-entry': handleDeleteWaistEntry(el.dataset.entryId); break;
   }
 }
 
@@ -2686,6 +3275,7 @@ function handleBack() {
       break;
     case 'history': navigate('home'); break;
     case 'settings': navigate('home'); break;
+    case 'body': navigate('home'); break;
     default: navigate('home');
   }
 }
@@ -3024,6 +3614,108 @@ function handleSetStartDate(value) {
   data.startDate = new Date(value + 'T00:00:00').toISOString();
   persist();
   showToast('Start date updated');
+}
+
+// ============================================================
+// BODY METRIC HANDLERS
+// ============================================================
+function handleDismissWaistBanner(e) {
+  if (e) { e.stopPropagation(); }
+  data.waistBannerDismissedDate = new Date().toISOString();
+  persist();
+  render();
+}
+
+function handleShowBodyweightInfo() {
+  openModal(`
+    <h3>Bodyweight — how to measure</h3>
+    <p style="font-size: 13px; color: var(--text-2); margin-bottom: 12px;">For the cleanest signal, weigh yourself under the same conditions each time:</p>
+    <ul class="body-instruction-list">
+      <li><strong>Morning</strong>, right after waking up</li>
+      <li>After using the bathroom</li>
+      <li><strong>Before</strong> food, water, or coffee</li>
+      <li>In underwear or nothing — not full clothes</li>
+      <li>Same day of the week each time (Sunday morning is a good default)</li>
+      <li>On the same scale, on a hard flat surface (not carpet)</li>
+    </ul>
+    <p style="font-size: 12px; color: var(--muted); margin-top: 12px;">If you have a smart scale that syncs to Apple Health, glance at the Health app and type the value here. Daily fluctuations of 2–4 lbs are normal — what matters is the weekly trend.</p>
+    <div class="modal-actions">
+      <button class="primary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Got it</button>
+    </div>
+  `);
+}
+
+function handleShowWaistInfo() {
+  openModal(`
+    <h3>Waist — how to measure</h3>
+    <p style="font-size: 13px; color: var(--text-2); margin-bottom: 12px;">Waist circumference is the most useful complement to bodyweight. Together they show whether your surplus is becoming muscle (weight up, waist stable) or fat (weight up, waist up too).</p>
+    <ul class="body-instruction-list">
+      <li><strong>Morning</strong>, before food or water, after using the bathroom</li>
+      <li>Bare skin — not over clothing</li>
+      <li>Tape measure at <strong>navel level</strong>, parallel to the floor</li>
+      <li><strong>Relaxed exhale</strong> — don't suck in, don't push out</li>
+      <li>Tape snug against skin but not compressing</li>
+      <li>Same day of the week (suggest Sunday morning so it pairs with bodyweight)</li>
+    </ul>
+    <p style="font-size: 12px; color: var(--muted); margin-top: 12px;">Track every <strong>2 weeks</strong> — waist changes slowly, and weekly noise will obscure the signal. A change of 0.5 inches over a month is meaningful.</p>
+    <div class="modal-actions">
+      <button class="primary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Got it</button>
+    </div>
+  `);
+}
+
+function handleLogBodyweight() {
+  const input = document.getElementById('bw-input');
+  if (!input) return;
+  const val = parseFloat(input.value);
+  if (isNaN(val) || val <= 0 || val > 1000) {
+    showToast('Enter a valid weight');
+    return;
+  }
+  if (!data.bodyweightLog) data.bodyweightLog = [];
+  data.bodyweightLog.push({
+    id: uid('bw'),
+    date: new Date().toISOString(),
+    value: val,
+  });
+  persist();
+  showToast(`Logged ${val} lbs ✓`);
+  render();
+}
+
+function handleLogWaist() {
+  const input = document.getElementById('waist-input');
+  if (!input) return;
+  const val = parseFloat(input.value);
+  if (isNaN(val) || val <= 0 || val > 100) {
+    showToast('Enter a valid measurement (inches)');
+    return;
+  }
+  if (!data.waistLog) data.waistLog = [];
+  data.waistLog.push({
+    id: uid('w'),
+    date: new Date().toISOString(),
+    value: val,
+  });
+  // Reset banner dismissal since they just logged
+  data.waistBannerDismissedDate = null;
+  persist();
+  showToast(`Logged ${val} in ✓`);
+  render();
+}
+
+function handleDeleteBwEntry(entryId) {
+  if (!confirm('Delete this bodyweight entry?')) return;
+  data.bodyweightLog = (data.bodyweightLog || []).filter(e => e.id !== entryId);
+  persist();
+  render();
+}
+
+function handleDeleteWaistEntry(entryId) {
+  if (!confirm('Delete this waist entry?')) return;
+  data.waistLog = (data.waistLog || []).filter(e => e.id !== entryId);
+  persist();
+  render();
 }
 
 function handleExport() {
