@@ -1,7 +1,7 @@
 // Service worker for Training Log PWA
 // Caches the app shell so it works offline after first load
 
-const CACHE_NAME = 'training-log-v1';
+const CACHE_NAME = 'training-log-v3';
 const ASSETS = [
   './',
   './index.html',
