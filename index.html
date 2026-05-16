@@ -3133,6 +3133,14 @@ function attachHandlers() {
       const action = el.dataset.action;
       handleAction(action, el, e);
     });
+    // For form inputs (date, select, etc.), also bind change since they don't reliably fire click
+    const tag = el.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') {
+      el.addEventListener('change', e => {
+        const action = el.dataset.action;
+        handleAction(action, el, e);
+      });
+    }
   });
   // Set inputs
   document.querySelectorAll('[data-set-input]').forEach(el => {
@@ -3614,6 +3622,7 @@ function handleSetStartDate(value) {
   data.startDate = new Date(value + 'T00:00:00').toISOString();
   persist();
   showToast('Start date updated');
+  render();
 }
 
 // ============================================================
