@@ -1227,6 +1227,74 @@ html, body {
 }
 .body-card-input button:disabled { opacity: 0.4; cursor: not-allowed; }
 
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 8px 0 10px;
+}
+.comp-cell {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.comp-cell-val {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.comp-cell-val .unit {
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 500;
+  margin-left: 2px;
+}
+.comp-cell-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 3px;
+}
+
+.comp-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.comp-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.comp-input-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.comp-input-row input {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 10px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.comp-input-row input:focus { border-color: var(--accent); }
+.comp-input-row input::-webkit-outer-spin-button,
+.comp-input-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
 .body-instruction-list {
   font-size: 13px;
   color: var(--text-2);
@@ -1371,6 +1439,7 @@ function loadData() {
     // Body metrics migration — add empty arrays if missing
     if (!parsed.bodyweightLog) { parsed.bodyweightLog = []; migrationRan = true; }
     if (!parsed.waistLog) { parsed.waistLog = []; migrationRan = true; }
+    if (!parsed.compositionLog) { parsed.compositionLog = []; migrationRan = true; }
     if (parsed.waistBannerDismissedDate === undefined) { parsed.waistBannerDismissedDate = null; migrationRan = true; }
     // One-shot migration: upgrade tricep+curl superset to new type
     if (!parsed.migrations) parsed.migrations = {};
@@ -1441,6 +1510,7 @@ function defaultData() {
     collapsedSections: {}, // { 'exId-target': true, ... } — per-exercise collapse state
     bodyweightLog: [],   // array of { id, date, value } — weekly bodyweight entries (lbs)
     waistLog: [],        // array of { id, date, value } — biweekly waist entries (inches)
+    compositionLog: [],  // array of { id, date, bodyFat, visceralFat, musclePct, bmi } — scale readings
     waistBannerDismissedDate: null, // ISO date string — banner dismissed for this week
   };
 }
@@ -1567,6 +1637,12 @@ function getLastBodyweight() {
 
 function getLastWaist() {
   const log = data.waistLog || [];
+  if (log.length === 0) return null;
+  return [...log].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+}
+
+function getLastComposition() {
+  const log = data.compositionLog || [];
   if (log.length === 0) return null;
   return [...log].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 }
@@ -2645,11 +2721,14 @@ function renderHistory() {
 }
 
 function renderCompositeChart() {
-  // Gather data: bodyweight, waist, and strength index across all sessions
+  // Gather all body metric series
   const bwSorted = [...(data.bodyweightLog || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
   const waistSorted = [...(data.waistLog || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const compSorted = [...(data.compositionLog || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const bodyFatSeries = compSorted.filter(e => e.bodyFat != null).map(e => ({ date: e.date, value: e.bodyFat }));
+  const muscleSeries = compSorted.filter(e => e.musclePct != null).map(e => ({ date: e.date, value: e.musclePct }));
 
-  // Build strength index series: for each completed session, sum top-set weights of all composite-tagged exercises
+  // Strength index: top-set sum across composite-tagged exercises per completed session
   const tagged = new Set();
   for (const b of data.blocks) for (const d of b.days) for (const ex of d.exercises) {
     if (ex.compositeChart) tagged.add(ex.id);
@@ -2673,57 +2752,55 @@ function renderCompositeChart() {
     })
     .filter(Boolean);
 
-  // Need at least one series with 2+ data points to render
   const haveBW = bwSorted.length >= 2;
-  const haveWaist = waistSorted.length >= 2;
+  const haveBodyFat = bodyFatSeries.length >= 2;
+  const haveMuscle = muscleSeries.length >= 2;
   const haveStrength = sessionStrength.length >= 2;
 
-  if (!haveBW && !haveWaist && !haveStrength) {
-    // Don't show the section if there's nothing to plot
-    return '';
-  }
+  if (!haveBW && !haveBodyFat && !haveMuscle && !haveStrength) return '';
 
-  // If only one series has enough data, show a helpful empty-ish state
-  const seriesCount = [haveBW, haveWaist, haveStrength].filter(Boolean).length;
+  const seriesCount = [haveBW, haveBodyFat, haveMuscle, haveStrength].filter(Boolean).length;
   if (seriesCount < 2) {
     let needsMsg = [];
     if (!haveBW) needsMsg.push('bodyweight');
-    if (!haveWaist) needsMsg.push('waist');
+    if (!haveBodyFat) needsMsg.push('body fat %');
+    if (!haveMuscle) needsMsg.push('muscle %');
     if (!haveStrength) needsMsg.push('compound-lift sessions');
     return `
       <h2 class="section-h">Body vs strength</h2>
       <div class="chart-wrap" style="padding: 20px; text-align: center;">
-        <p class="muted" style="font-size: 12.5px; margin: 0;">Log at least 2 entries of each (bodyweight, waist, and compound lifts) to see the composite trend.<br>Still need ${needsMsg.length} more entries for: ${needsMsg.join(', ')}.</p>
+        <p class="muted" style="font-size: 12.5px; margin: 0;">Need 2+ entries each in at least 2 of: ${needsMsg.join(', ')}.</p>
       </div>
     `;
   }
 
   // Normalize each series to % change from its first value
-  function normalize(arr, key) {
+  function normalize(arr) {
     if (arr.length === 0) return [];
-    const base = key ? arr[0][key] : arr[0].value;
+    const base = arr[0].value;
     return arr.map(p => ({
       date: p.date,
-      dateLabel: fmtDateShort(p.date),
-      pct: base > 0 ? ((key ? p[key] : p.value) - base) / base * 100 : 0,
-      raw: key ? p[key] : p.value,
+      pct: base !== 0 ? (p.value - base) / Math.abs(base) * 100 : 0,
+      raw: p.value,
     }));
   }
-  const bwPts = haveBW ? normalize(bwSorted, 'value') : [];
-  const waistPts = haveWaist ? normalize(waistSorted, 'value') : [];
-  const strengthPts = haveStrength ? normalize(sessionStrength, 'value') : [];
+  const bwPts = haveBW ? normalize(bwSorted.map(e => ({ date: e.date, value: e.value }))) : [];
+  const bodyFatPts = haveBodyFat ? normalize(bodyFatSeries) : [];
+  const musclePts = haveMuscle ? normalize(muscleSeries) : [];
+  const strengthPts = haveStrength ? normalize(sessionStrength) : [];
 
-  // Build SVG: shared time axis (from earliest to latest date across all series)
+  // Build SVG: shared time axis
   const allDates = [
     ...bwPts.map(p => new Date(p.date).getTime()),
-    ...waistPts.map(p => new Date(p.date).getTime()),
+    ...bodyFatPts.map(p => new Date(p.date).getTime()),
+    ...musclePts.map(p => new Date(p.date).getTime()),
     ...strengthPts.map(p => new Date(p.date).getTime()),
   ];
   const tMin = Math.min(...allDates);
   const tMax = Math.max(...allDates);
   const tRange = tMax - tMin || 1;
 
-  const allPcts = [...bwPts, ...waistPts, ...strengthPts].map(p => p.pct);
+  const allPcts = [...bwPts, ...bodyFatPts, ...musclePts, ...strengthPts].map(p => p.pct);
   const pctMin = Math.min(0, ...allPcts);
   const pctMax = Math.max(0, ...allPcts);
   const pad = Math.max(2, (pctMax - pctMin) * 0.1);
@@ -2739,13 +2816,12 @@ function renderCompositeChart() {
     if (pts.length === 0) return '';
     return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${xOf(new Date(p.date).getTime())} ${yOf(p.pct)}`).join(' ');
   }
+  function dotsFor(pts, color) {
+    return pts.map(p => `<circle cx="${xOf(new Date(p.date).getTime())}" cy="${yOf(p.pct)}" r="2.5" fill="${color}"/>`).join('');
+  }
 
-  // Y-axis ticks (just 3: min, 0, max)
   const yTicks = [yMin, 0, yMax].map(v => ({ v: Math.round(v * 10) / 10, y: yOf(v) }));
-  // Zero reference line
   const zeroY = yOf(0);
-
-  // X-axis labels (start, middle, end)
   const xLabels = [tMin, (tMin + tMax) / 2, tMax].map(t => ({
     x: xOf(t),
     label: fmtDateShort(new Date(t).toISOString()),
@@ -2754,23 +2830,26 @@ function renderCompositeChart() {
   return `
     <h2 class="section-h">Body vs strength</h2>
     <div class="composite-key">
-      <div class="composite-key-row"><span class="composite-key-dot">⬆</span><span><strong style="color: var(--green);">Strength up, weight up, waist flat</strong> — muscle gain, surplus is working</span></div>
-      <div class="composite-key-row"><span class="composite-key-dot">⚠</span><span><strong style="color: var(--yellow);">Weight up, waist up, strength flat</strong> — surplus is too aggressive, mostly fat</span></div>
-      <div class="composite-key-row"><span class="composite-key-dot">⬇</span><span><strong style="color: var(--red);">Strength flat, weight flat or down</strong> — under-eating, not recovering</span></div>
+      <div class="composite-key-row"><span class="composite-key-dot" style="color: var(--green);">⬆</span><span><strong style="color: var(--green);">Muscle % up + strength up</strong> — real muscle gain</span></div>
+      <div class="composite-key-row"><span class="composite-key-dot" style="color: var(--accent);">~</span><span><strong style="color: var(--accent);">Weight up, body fat & muscle stable</strong> — clean bulk, surplus working</span></div>
+      <div class="composite-key-row"><span class="composite-key-dot" style="color: var(--yellow);">⚠</span><span><strong style="color: var(--yellow);">Weight up + body fat % up + muscle flat</strong> — surplus too aggressive, mostly fat</span></div>
+      <div class="composite-key-row"><span class="composite-key-dot" style="color: var(--red);">⬇</span><span><strong style="color: var(--red);">Strength flat, weight flat or down</strong> — under-eating, not recovering</span></div>
     </div>
     <div class="chart-wrap">
       <div class="chart-title">% change from first entry</div>
       <div class="composite-legend">
         ${haveBW ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #d4a574;"></span>Bodyweight</div>` : ''}
-        ${haveWaist ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #c98a6b;"></span>Waist</div>` : ''}
-        ${haveStrength ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #7ca85a;"></span>Strength</div>` : ''}
+        ${haveBodyFat ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #c46b5b;"></span>Body fat</div>` : ''}
+        ${haveMuscle ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #7ca85a;"></span>Muscle</div>` : ''}
+        ${haveStrength ? `<div class="composite-legend-item"><span class="composite-legend-dot" style="background: #6b9bc4;"></span>Strength</div>` : ''}
       </div>
       <svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="height: 200px;">
         ${yTicks.map(t => `<line x1="${padL}" x2="${W - padR}" y1="${t.y}" y2="${t.y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/><text x="${padL - 6}" y="${t.y + 3}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="end" font-family="JetBrains Mono, monospace">${t.v >= 0 ? '+' : ''}${t.v}%</text>`).join('')}
         <line x1="${padL}" x2="${W - padR}" y1="${zeroY}" y2="${zeroY}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-        ${haveBW ? `<path d="${makePath(bwPts)}" fill="none" stroke="#d4a574" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${bwPts.map(p => `<circle cx="${xOf(new Date(p.date).getTime())}" cy="${yOf(p.pct)}" r="2.5" fill="#d4a574"/>`).join('')}` : ''}
-        ${haveWaist ? `<path d="${makePath(waistPts)}" fill="none" stroke="#c98a6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${waistPts.map(p => `<circle cx="${xOf(new Date(p.date).getTime())}" cy="${yOf(p.pct)}" r="2.5" fill="#c98a6b"/>`).join('')}` : ''}
-        ${haveStrength ? `<path d="${makePath(strengthPts)}" fill="none" stroke="#7ca85a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${strengthPts.map(p => `<circle cx="${xOf(new Date(p.date).getTime())}" cy="${yOf(p.pct)}" r="2.5" fill="#7ca85a"/>`).join('')}` : ''}
+        ${haveBW ? `<path d="${makePath(bwPts)}" fill="none" stroke="#d4a574" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${dotsFor(bwPts, '#d4a574')}` : ''}
+        ${haveBodyFat ? `<path d="${makePath(bodyFatPts)}" fill="none" stroke="#c46b5b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${dotsFor(bodyFatPts, '#c46b5b')}` : ''}
+        ${haveMuscle ? `<path d="${makePath(musclePts)}" fill="none" stroke="#7ca85a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${dotsFor(musclePts, '#7ca85a')}` : ''}
+        ${haveStrength ? `<path d="${makePath(strengthPts)}" fill="none" stroke="#6b9bc4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${dotsFor(strengthPts, '#6b9bc4')}` : ''}
         ${xLabels.map(l => `<text x="${l.x}" y="${H - 6}" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle" font-family="JetBrains Mono, monospace">${l.label}</text>`).join('')}
       </svg>
     </div>
@@ -2820,12 +2899,15 @@ function renderKneeChart(kneeData) {
 function renderBody() {
   const lastBW = getLastBodyweight();
   const lastWaist = getLastWaist();
+  const lastComp = getLastComposition();
   const waistDays = daysSinceLastWaist();
   const isWaistOverdue = isWaistDue();
+  const compDays = lastComp ? Math.floor((Date.now() - new Date(lastComp.date).getTime()) / 86400000) : null;
 
   // Sort logs newest first for display
   const bwList = [...(data.bodyweightLog || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
   const waistList = [...(data.waistLog || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const compList = [...(data.compositionLog || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   // Sort oldest first for charts
   const bwChartData = [...(data.bodyweightLog || [])]
@@ -2834,10 +2916,15 @@ function renderBody() {
   const waistChartData = [...(data.waistLog || [])]
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .map(e => ({ date: e.date, dateLabel: fmtDateShort(e.date), waist: e.value }));
+  const compSorted = [...(data.compositionLog || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const bodyFatChart = compSorted.filter(e => e.bodyFat != null).map(e => ({ date: e.date, dateLabel: fmtDateShort(e.date), bodyFat: e.bodyFat }));
+  const visceralChart = compSorted.filter(e => e.visceralFat != null).map(e => ({ date: e.date, dateLabel: fmtDateShort(e.date), visceralFat: e.visceralFat }));
+  const muscleChart = compSorted.filter(e => e.musclePct != null).map(e => ({ date: e.date, dateLabel: fmtDateShort(e.date), musclePct: e.musclePct }));
+  const bmiChart = compSorted.filter(e => e.bmi != null).map(e => ({ date: e.date, dateLabel: fmtDateShort(e.date), bmi: e.bmi }));
 
   return `
     <div class="view">
-      ${topbar('Body', 'Bodyweight and waist tracking')}
+      ${topbar('Body', 'Track your weight, waist, and scale readings')}
 
       <!-- BODYWEIGHT CARD -->
       <div class="body-card">
@@ -2855,6 +2942,44 @@ function renderBody() {
           <input type="number" inputmode="decimal" step="any" id="bw-input" placeholder="${lastBW ? lastBW.value : 'lbs'}">
           <button data-action="log-bodyweight">Log</button>
         </div>
+      </div>
+
+      <!-- SCALE COMPOSITION CARD -->
+      <div class="body-card">
+        <div class="body-card-head">
+          <div class="body-card-title">Scale composition</div>
+          <span class="body-cadence-pill">weekly</span>
+          <button class="body-info-btn" data-action="show-composition-info" aria-label="How to measure">${I.info(16)}</button>
+        </div>
+        ${lastComp ? `
+          <div class="comp-grid">
+            ${lastComp.bodyFat != null ? `<div class="comp-cell"><div class="comp-cell-val">${lastComp.bodyFat}<span class="unit">%</span></div><div class="comp-cell-label">body fat</div></div>` : ''}
+            ${lastComp.musclePct != null ? `<div class="comp-cell"><div class="comp-cell-val">${lastComp.musclePct}<span class="unit">%</span></div><div class="comp-cell-label">muscle</div></div>` : ''}
+            ${lastComp.visceralFat != null ? `<div class="comp-cell"><div class="comp-cell-val">${lastComp.visceralFat}</div><div class="comp-cell-label">visceral</div></div>` : ''}
+            ${lastComp.bmi != null ? `<div class="comp-cell"><div class="comp-cell-val">${lastComp.bmi}</div><div class="comp-cell-label">BMI</div></div>` : ''}
+          </div>
+          <div class="body-card-meta">Last: ${fmtDate(lastComp.date)} · ${daysAgo(lastComp.date)}</div>
+        ` : `<div class="body-card-meta">No entries yet — tap the info icon for how to use your scale</div>`}
+
+        <div class="comp-inputs">
+          <div class="comp-input-row">
+            <label class="comp-input-label">Body fat %</label>
+            <input type="number" inputmode="decimal" step="any" id="comp-bodyfat" placeholder="${lastComp?.bodyFat ?? '—'}">
+          </div>
+          <div class="comp-input-row">
+            <label class="comp-input-label">Muscle %</label>
+            <input type="number" inputmode="decimal" step="any" id="comp-muscle" placeholder="${lastComp?.musclePct ?? '—'}">
+          </div>
+          <div class="comp-input-row">
+            <label class="comp-input-label">Visceral fat</label>
+            <input type="number" inputmode="decimal" step="any" id="comp-visceral" placeholder="${lastComp?.visceralFat ?? '—'}">
+          </div>
+          <div class="comp-input-row">
+            <label class="comp-input-label">BMI</label>
+            <input type="number" inputmode="decimal" step="any" id="comp-bmi" placeholder="${lastComp?.bmi ?? '—'}">
+          </div>
+        </div>
+        <button class="primary-btn" data-action="log-composition" style="margin-top: 10px;">${I.save()}<span>Log composition reading</span></button>
       </div>
 
       <!-- WAIST CARD -->
@@ -2881,6 +3006,26 @@ function renderBody() {
         ${renderLineChart('Weight (lbs)', bwChartData, 'weight', 'lb', '#d4a574')}
       ` : ''}
 
+      ${bodyFatChart.length >= 2 ? `
+        <h2 class="section-h">Body fat trend</h2>
+        ${renderLineChart('Body fat %', bodyFatChart, 'bodyFat', '%', '#c46b5b')}
+      ` : ''}
+
+      ${muscleChart.length >= 2 ? `
+        <h2 class="section-h">Muscle trend</h2>
+        ${renderLineChart('Muscle %', muscleChart, 'musclePct', '%', '#7ca85a')}
+      ` : ''}
+
+      ${visceralChart.length >= 2 ? `
+        <h2 class="section-h">Visceral fat trend</h2>
+        ${renderLineChart('Visceral fat', visceralChart, 'visceralFat', '', '#d4b554')}
+      ` : ''}
+
+      ${bmiChart.length >= 2 ? `
+        <h2 class="section-h">BMI trend</h2>
+        ${renderLineChart('BMI', bmiChart, 'bmi', '', '#b5a896')}
+      ` : ''}
+
       ${waistChartData.length >= 2 ? `
         <h2 class="section-h">Waist trend</h2>
         ${renderLineChart('Waist (inches)', waistChartData, 'waist', 'in', '#c98a6b')}
@@ -2896,6 +3041,25 @@ function renderBody() {
               <span><span class="body-log-value">${e.value} lb</span><button class="delete-btn" data-action="delete-bw-entry" data-entry-id="${e.id}" aria-label="Delete">${I.trash(12)}</button></span>
             </div>
           `).join('')}
+        </div>
+      ` : ''}
+
+      ${compList.length > 0 ? `
+        <h2 class="section-h">Composition log</h2>
+        <div class="body-log-list">
+          ${compList.map(e => {
+            const parts = [];
+            if (e.bodyFat != null) parts.push(`${e.bodyFat}% fat`);
+            if (e.musclePct != null) parts.push(`${e.musclePct}% muscle`);
+            if (e.visceralFat != null) parts.push(`V${e.visceralFat}`);
+            if (e.bmi != null) parts.push(`BMI ${e.bmi}`);
+            return `
+              <div class="body-log-row">
+                <span class="body-log-date">${fmtDate(e.date)}</span>
+                <span><span class="body-log-value">${parts.join(' · ')}</span><button class="delete-btn" data-action="delete-comp-entry" data-entry-id="${e.id}" aria-label="Delete">${I.trash(12)}</button></span>
+              </div>
+            `;
+          }).join('')}
         </div>
       ` : ''}
 
@@ -3255,10 +3419,13 @@ function handleAction(action, el, e) {
     case 'dismiss-waist-banner': handleDismissWaistBanner(e); break;
     case 'show-bodyweight-info': handleShowBodyweightInfo(); break;
     case 'show-waist-info': handleShowWaistInfo(); break;
+    case 'show-composition-info': handleShowCompositionInfo(); break;
     case 'log-bodyweight': handleLogBodyweight(); break;
     case 'log-waist': handleLogWaist(); break;
+    case 'log-composition': handleLogComposition(); break;
     case 'delete-bw-entry': handleDeleteBwEntry(el.dataset.entryId); break;
     case 'delete-waist-entry': handleDeleteWaistEntry(el.dataset.entryId); break;
+    case 'delete-comp-entry': handleDeleteCompEntry(el.dataset.entryId); break;
   }
 }
 
@@ -3723,6 +3890,66 @@ function handleDeleteBwEntry(entryId) {
 function handleDeleteWaistEntry(entryId) {
   if (!confirm('Delete this waist entry?')) return;
   data.waistLog = (data.waistLog || []).filter(e => e.id !== entryId);
+  persist();
+  render();
+}
+
+function handleShowCompositionInfo() {
+  openModal(`
+    <h3>Scale composition — how to measure</h3>
+    <p style="font-size: 13px; color: var(--text-2); margin-bottom: 12px;">Bioimpedance scales send a tiny current through your body to estimate body fat, muscle, and visceral fat. They're best at trends over weeks, not individual readings.</p>
+    <p style="font-size: 13px; color: var(--text-2); margin-bottom: 10px;"><strong>For the cleanest signal:</strong></p>
+    <ul class="body-instruction-list">
+      <li>Morning, before food or water</li>
+      <li>After using the bathroom</li>
+      <li>Bare feet, dry skin (wet feet skew the reading)</li>
+      <li>Same time of day each measurement</li>
+      <li>Same day of the week (Sunday morning is a good default)</li>
+      <li>Stand still on the metal pads — wait until the reading stabilizes</li>
+    </ul>
+    <p style="font-size: 12px; color: var(--muted); margin-top: 12px;"><strong>What to look for in the trends:</strong><br>
+    • <span style="color: var(--green);">Muscle % up + body fat % down</span> — body recomposition (the ideal)<br>
+    • <span style="color: var(--accent);">Bodyweight up + muscle % stable + body fat % stable</span> — muscle gain is matching fat gain (acceptable bulk)<br>
+    • <span style="color: var(--yellow);">Bodyweight up + body fat % up + muscle % down</span> — surplus is too aggressive, mostly fat<br>
+    • Visceral fat ratings of 1–12 are typical; 13+ is considered elevated regardless of bodyweight</p>
+    <p style="font-size: 11.5px; color: var(--muted); margin-top: 10px; font-style: italic;">Daily readings can swing 2–3% from hydration alone. Don't react to one number — watch the trend over 3–4 weekly readings.</p>
+    <div class="modal-actions">
+      <button class="primary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Got it</button>
+    </div>
+  `);
+}
+
+function handleLogComposition() {
+  const bf = parseFloat(document.getElementById('comp-bodyfat')?.value);
+  const muscle = parseFloat(document.getElementById('comp-muscle')?.value);
+  const visceral = parseFloat(document.getElementById('comp-visceral')?.value);
+  const bmi = parseFloat(document.getElementById('comp-bmi')?.value);
+
+  const entry = {
+    id: uid('comp'),
+    date: new Date().toISOString(),
+    bodyFat: !isNaN(bf) && bf > 0 && bf < 80 ? bf : null,
+    musclePct: !isNaN(muscle) && muscle > 0 && muscle < 100 ? muscle : null,
+    visceralFat: !isNaN(visceral) && visceral >= 0 && visceral < 100 ? visceral : null,
+    bmi: !isNaN(bmi) && bmi > 5 && bmi < 100 ? bmi : null,
+  };
+
+  // Need at least one valid value
+  if (entry.bodyFat == null && entry.musclePct == null && entry.visceralFat == null && entry.bmi == null) {
+    showToast('Enter at least one valid value');
+    return;
+  }
+
+  if (!data.compositionLog) data.compositionLog = [];
+  data.compositionLog.push(entry);
+  persist();
+  showToast('Composition logged ✓');
+  render();
+}
+
+function handleDeleteCompEntry(entryId) {
+  if (!confirm('Delete this composition entry?')) return;
+  data.compositionLog = (data.compositionLog || []).filter(e => e.id !== entryId);
   persist();
   render();
 }
