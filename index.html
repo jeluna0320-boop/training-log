@@ -3990,16 +3990,52 @@ function fallbackCopy(text) {
 function handleImport() {
   openModal(`
     <h3>Import data</h3>
-    <p style="font-size: 12.5px; color: var(--text-2); margin-bottom: 12px;">Paste your previously exported JSON below. This will overwrite all current data.</p>
+    <p style="font-size: 12.5px; color: var(--text-2); margin-bottom: 14px;">Pick the backup file from your iPhone's Files app, or paste the JSON text below. This will overwrite all current data.</p>
+
+    <button class="primary-btn" id="import-file-btn" style="margin-bottom: 14px;">${I.save()}<span>Choose .json file from Files</span></button>
+    <input type="file" id="import-file-input" accept="application/json,.json,.txt" style="display: none;">
+    <div id="import-file-status" style="font-size: 12px; color: var(--muted); margin-bottom: 14px; text-align: center; min-height: 16px;"></div>
+
+    <div style="text-align: center; font-size: 11px; color: var(--muted); margin: 6px 0 10px; letter-spacing: 0.08em;">— OR PASTE TEXT —</div>
+
     <label class="field">
       <span>Paste JSON</span>
-      <textarea data-bind="import-text" rows="10" placeholder='{"version":1, ...}'></textarea>
+      <textarea data-bind="import-text" rows="6" placeholder='{"version":1, ...}'></textarea>
     </label>
     <div class="modal-actions">
       <button class="secondary-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(o => o.remove())">Cancel</button>
       <button class="primary-btn" data-modal-action="import-confirm">Import</button>
     </div>
   `);
+
+  // Wire up file picker after modal renders
+  setTimeout(() => {
+    const fileBtn = document.getElementById('import-file-btn');
+    const fileInput = document.getElementById('import-file-input');
+    const status = document.getElementById('import-file-status');
+    const textarea = document.querySelector('.modal [data-bind="import-text"]');
+
+    if (fileBtn && fileInput) {
+      fileBtn.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (status) status.textContent = `Reading ${file.name}…`;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const text = event.target?.result;
+          if (typeof text === 'string' && textarea) {
+            textarea.value = text;
+            if (status) status.textContent = `✓ Loaded ${file.name} (${(file.size / 1024).toFixed(1)} KB). Tap Import below.`;
+          } else if (status) {
+            status.textContent = 'Could not read file';
+          }
+        };
+        reader.onerror = () => { if (status) status.textContent = 'Failed to read file'; };
+        reader.readAsText(file);
+      });
+    }
+  }, 50);
 }
 
 function handleResetAll() {
